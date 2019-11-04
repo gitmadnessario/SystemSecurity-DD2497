@@ -3,4 +3,4 @@
 ## Contributions by authors
  * **Max Turpeinen** - Edited README
  * **Mona Lindgren** - Edited README
- 
+ * **Konstantinos Kalogiannis** - Edited README 
