@@ -154,6 +154,8 @@ static mutex_t thread_lock = MUTEX_INITIALIZER;
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <time.h>
 
 /*
  * This structure describes a page worth of chunks.
@@ -360,6 +362,21 @@ wrtwarning(const char *p)
 }
 #endif
 
+
+//seed
+static u_long rnext = 1;
+#define	RAND_MAX	0x7fffffff
+
+//return new random number
+int trand(void){
+ 	return (int)((rnext = rnext * 1103515245 + 12345) % ((u_long)RAND_MAX + 1));
+}
+
+//set seed
+void tsrand(u_int seed){
+ 	rnext = seed;
+}
+
 /*
  * Allocate a number of pages from the OS
  */
@@ -373,6 +390,20 @@ map_pages(size_t pages)
 	errno = ENOMEM;
 	return NULL;
     }
+
+    // All these provoke kernel panic, pathetic!
+    // struct timeval tp;
+    // gettimeofday(&tp, NULL);
+    // tsrand(tp.tv_sec);
+    // tsrand(time(NULL));
+    // tsrand(getuid());
+
+    /* Allocate random bytes before mapping */
+    tsrand((u_int)pages); //init seed
+    
+    /* +1 to avoid 0 increment in sbrk */
+    if((result = sbrk(trand() % 8192 + 1)) == (void *) -1)
+	    return NULL;
 
     if ((result = sbrk(bytes)) == (void *)-1)
 	return NULL;
