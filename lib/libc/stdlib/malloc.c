@@ -394,9 +394,53 @@ map_pages(size_t pages)
     // All these provoke kernel panic, pathetic!
     // struct timeval tp;
     // gettimeofday(&tp, NULL);
+
     // tsrand(tp.tv_sec);
+
     // tsrand(time(NULL));
+
     // tsrand(getuid());
+
+    // printf("pathetic\n");
+
+    // int openF = open("/dev/urandom", O_RDONLY);
+    // if (openF < 0){
+    //     printf("could not open /dev/urandom!");
+    // }
+    // else{
+    //     char input[4];
+    //     ssize_t dataresult = read(openF, input, sizeof input);
+    //     if (dataresult < 0){
+    //         printf("something failed");
+    //     }
+    // }
+
+    // printf("something must work\n");
+
+    // openF = open("/dev/random", O_RDONLY);
+    // if (openF < 0){
+    //     printf("could not open /dev/random!");
+    // }
+    // else{
+    //     char input[4];
+    //     size_t readLen = 0;
+    //     while (readLen < sizeof input){
+    //         ssize_t dataresult = read(openF, input + readLen, (sizeof input) - readLen);
+    //         if (result < 0)
+    //         {
+    //             printf("something failed");
+    //         }
+    //         readLen += dataresult;
+    //     }
+    // }
+
+    // printf("....\n");
+
+    // char data[4];
+    // FILE *fp;
+    // fp = fopen("/dev/urandom", "r");
+    // fread(&data, 1, 4, fp);
+    // fclose(fp);
 
     /* Allocate random bytes before mapping */
     tsrand((u_int)pages); //init seed
