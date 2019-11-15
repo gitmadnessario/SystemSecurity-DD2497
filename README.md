@@ -5,7 +5,7 @@ By executing
 ``` c
 ./overflow attacker [address of authorized] | ./overflow victim
 ```
-it's possible to achive an overflow attack where the `do_something()` function without providing the required password. The address of the *authorized* field can be obtained by first executing
+it's possible to achive an overflow attack where the `do_something()` function is called without providing the required password. The address of the *authorized* field can be obtained by first executing
 ``` c
 ./overflow victim
 ```
@@ -19,6 +19,8 @@ The password check in victim will fail as the string doesn't equal "pwd", so *au
 
 ## Demonstrate that ASLR counters the attack
 This buffer overflow attack is only possible when the attacker knows the address of the *authorized* field, i.e. by noting the leaked address in victim-mode. The *authorized* field is declared inside the victim-function, which means it will end up somewhere on the stack segment. Without ASLR in place the address of *authorized* is the same every time the program is executed. 
+
+ASLR is a buffer overflow attack mitigation technique where the stack and heap segments starts at random memory addresses in every execution of a program. 
 
 If ASLR is implemented, the attacker needs to guess which address *authorized* will get in the second overflow call in 
 ``` c
