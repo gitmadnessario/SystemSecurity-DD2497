@@ -17,6 +17,14 @@ The victim function then reads into *input* using gets(). When passed the specia
 
 The password check in victim will fail as the string doesn't equal "pwd", so *authorized* will be set to 0. However, when using strcpy at line 29 to change the message to "Fail" this will not have the intended effect, but instead making *authorized* nonzero which means the `if(authorized)` check will pass and the `do_something()` function will be run.
 
+## Demonstrate that ASLR counters the attack
+This buffer overflow attack is only possible when the attacker knows the address of the *authorized* field, i.e. by noting the leaked address in victim-mode. The *authorized* field is declared inside the victim-function, which means it will end up somewhere on the stack segment. Without ASLR in place the address of *authorized* is the same every time the program is executed. 
+
+If ASLR is implemented, the attacker needs to guess which address *authorized* will get in the second overflow call in 
+``` c
+./overflow attacker [address of authorized] | ./overflow victim
+```
+This makes the probability of a successful attack very low. 
 
 
 ## Contributions by authors
