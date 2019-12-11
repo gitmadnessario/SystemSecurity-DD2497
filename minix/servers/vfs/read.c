@@ -240,7 +240,24 @@ int read_write(struct fproc *rfp, int rw_flag, int fd, struct filp *f,
 	} else {
 		/* I think we should have the file bytes (buf??) encrypted at this point. */
 		/* check rw_flag to determine encrypt/decrypt operation */
-		/* printf ("%s \n", "FILE READ/WRITE"); */
+
+		/* debugging print statements*/
+		/* this will only be printed for file READ/WRITES by other users than root */	
+		if(vp->v_uid > 0){
+			// for READ or WRITES
+			printf ("%s \n", "uid of inode");
+			printf ("%u \n", vp->v_uid);
+			printf ("%s \n", "inode number");
+			printf ("%llu \n", vp->v_inode_nr);
+			printf ("%s \n", "device number");
+			printf ("%llu \n", vp->v_dev);
+			
+			/* How do we access the actual data in the buffer? */
+
+			/* If we know how to access the buffer data we can, as a first step,
+			''encrypt''/''decrypt'' it using simple XOR with some hardcoded value as key. */
+						
+		}
 		off_t new_pos;
 		r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, position,
 			rw_flag, for_e, buf, size, &new_pos,
