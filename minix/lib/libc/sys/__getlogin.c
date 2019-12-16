@@ -39,9 +39,9 @@ int __getlogin(char *logname, size_t sz)
     printf("%c", logname[i]);
   }
   pw_entry = getpwuid(getuid());
-  printf("after getpwuid()\n");
+  printf("\n__getlogin:after getpwuid()\n");
   for(i = 0; i < sz; i++){
-    printf("%c", pw_entry->pw_name[i]);
+    printf("%c ", pw_entry->pw_name[i]);
   }
   printf("uid_t:%u\n", pw_entry->pw_uid);
   printf("hashed password:%s\n", pw_entry->pw_passwd);

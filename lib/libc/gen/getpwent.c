@@ -2516,8 +2516,8 @@ getpwuid(uid_t uid)
 		/* This evaluates before you type the password
 		 * during login, giving root and empty password.
 		 */
-		printf("after getpwuid()\n");
-		printf("%s", retval->pw_name);
+		printf("getpwuid:after getpwuid()\n");
+		printf("%s ", retval->pw_name);
 		printf("uid_t:%u\n", retval->pw_uid);
 		printf("hashed password:%s\n", retval->pw_passwd);
 	}
