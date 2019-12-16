@@ -2493,12 +2493,13 @@ getpwnam_r(const char *name, struct passwd *pwd, char *buffer, size_t buflen,
 	}
 }
 
+//This is called before login.c
 struct passwd *
 getpwuid(uid_t uid)
 {
 	int		rv;
 	struct passwd	*retval;
-
+	printf("getpwent.c:getpwuid()\n");
 	static const ns_dtab dtab[] = {
 		NS_FILES_CB(_files_getpwuid, NULL)
 		NS_DNS_CB(_dns_getpwuid, NULL)
