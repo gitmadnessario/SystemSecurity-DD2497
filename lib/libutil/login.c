@@ -71,11 +71,6 @@ login(const struct utmp *ut)
 		printf("%c", ut->ut_name[i]);
 	}
 	printf("\n");
-	printf("ut_host:");
-	for(i = 0; i< 16; i++){
-		printf("%c", ut->ut_host[i]);
-	}
-	printf("\n");
 
 	tty = ttyslot();
 	if (tty > 0 && (fd = open(_PATH_UTMP, O_WRONLY|O_CREAT, 0644)) >= 0) {

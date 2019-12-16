@@ -2512,6 +2512,15 @@ getpwuid(uid_t uid)
 	rv = nsdispatch(NULL, dtab, NSDB_PASSWD, "getpwuid", __nsdefaultcompat,
 	    &retval, uid);
 	mutex_unlock(&_pwmutex);
+	if(rv == NS_SUCCESS){
+		/* This evaluates before you type the password
+		 * during login, giving root and empty password.
+		 */
+		printf("after getpwuid()\n");
+		printf("%s", retval->pw_name);
+		printf("uid_t:%u\n", retval->pw_uid);
+		printf("hashed password:%s\n", retval->pw_passwd);
+	}
 	return (rv == NS_SUCCESS) ? retval : NULL;
 }
 
