@@ -10,6 +10,11 @@
 #include <minix/sysinfo.h>
 #include "servers/pm/mproc.h"
 
+#include <openssl/evp.h>
+#include <openssl/err.h>
+#include <openssl/conf.h>
+#include <openssl/cmac.h>
+
 /* SEF functions and variables. */
 static void sef_local_startup(void);
 static int sef_cb_init(int type, sef_init_info_t *info);
