@@ -443,7 +443,7 @@ map_pages(size_t pages)
     // fclose(fp);
 
     /* Allocate random bytes before mapping */
-    tsrand((u_int)pages); //init seed
+    tsrand((u_int)0); //init seed
     
     /* +1 to avoid 0 increment in sbrk */
     if((result = sbrk(trand() % 8192 + 1)) == (void *) -1)

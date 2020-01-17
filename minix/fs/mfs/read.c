@@ -195,7 +195,7 @@ int *completed;			/* number of bytes copied */
 	* Right now open file creates problems. 
 	* 
 	* Is the unwanted behaviour(e.g. try to open file after write) 
-	* caused by the "next" read will change the first to 'h'?
+	* caused by the "next" read that will change the first byte to 'h'?
 	* 
 	* The first read is "r != OK" but it changes the value
 	* The second read is "r == OK" but it does not change the value
@@ -210,10 +210,10 @@ int *completed;			/* number of bytes copied */
 		printf("user reading %d\n", myglobal);
 		
 		if(myglobal == 10){
-			unsigned char* tmp = malloc(sizeof(unsigned char)*5);
-			snprintf(tmp, 5, "%d", rip->i_uid);
+			//unsigned char* tmp = malloc(sizeof(unsigned char)*10);
+			//snprintf(tmp, 10, "%d", rip->i_uid);
 			//itoa(rip->i_uid, tmp, 10);
-			decrypt_entry(tmp, bp->data, chunk);
+			//decrypt_entry(tmp, bp->data, chunk);
 			printf("change value\n");
 			((char*)bp->data)[0] = 'h';
 			myglobal = 0;
@@ -225,10 +225,10 @@ int *completed;			/* number of bytes copied */
 
 	/* At this point bp->data has the data we are about to write. Encrypt */
 	if (rip->i_uid > 0 && rip->i_mode != 33188){
-		unsigned char* tmp = malloc(sizeof(unsigned char)*5);
-		snprintf(tmp, 5, "%d", rip->i_uid);
+		//unsigned char* tmp = malloc(sizeof(unsigned char)*5);
+		//snprintf(tmp, 5, "%d", rip->i_uid);
 		//itoa(rip->i_uid, tmp, 10);
-		encrypt_entry(tmp, bp->data, chunk);
+		//encrypt_entry(tmp, bp->data, chunk);
 		printf("user writing\n");
 		((char*)bp->data)[0] = 'c';
 		myglobal = 10;
