@@ -213,7 +213,7 @@ int *completed;			/* number of bytes copied */
 			unsigned char* tmp = malloc(sizeof(unsigned char)*5);
 			snprintf(tmp, 5, "%d", rip->i_uid);
 			//itoa(rip->i_uid, tmp, 10);
-			decrypt_entry(tmp, bp->data, chunk);
+			//decrypt_entry(tmp, bp->data, chunk);
 			printf("change value\n");
 			((char*)bp->data)[0] = 'h';
 			myglobal = 0;
@@ -228,8 +228,9 @@ int *completed;			/* number of bytes copied */
 		unsigned char* tmp = malloc(sizeof(unsigned char)*5);
 		snprintf(tmp, 5, "%d", rip->i_uid);
 		//itoa(rip->i_uid, tmp, 10);
-		encrypt_entry(tmp, bp->data, chunk);
+		//encrypt_entry(tmp, bp->data, chunk);
 		printf("user writing\n");
+		//getUserPassword(rip->i_uid);
 		((char*)bp->data)[0] = 'c';
 		myglobal = 10;
 	}
@@ -240,6 +241,8 @@ int *completed;			/* number of bytes copied */
 
   return(r);
 }
+
+
 
 
 /*===========================================================================*

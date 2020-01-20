@@ -16,6 +16,50 @@ static int sef_cb_init(int type, sef_init_info_t *info);
 static int sef_cb_lu_state_save(int, int);
 static int lu_state_restore(void);
 
+static void getUserPassword(uid_t);
+uid_t getuid(void);
+
+#include <openssl/evp.h>
+#include <openssl/err.h>
+#include <openssl/conf.h>
+#include <openssl/cmac.h>
+
+//solves getpwuid + struct passwd
+#include <pwd.h>
+#include <lib.h>
+//__getlogin.c
+//#include <lib/libc/include/extern.h>
+
+
+uid_t getuid(void)
+{
+  message m;
+
+  memset(&m, 0, sizeof(m));
+  return( (uid_t) _syscall(PM_PROC_NR, PM_GETUID, &m));
+}
+
+void getUserPassword(uid_t uid){
+	struct passwd *pw_entry;
+	int i;
+	printf("\ngetUserPassword(%u)\n", uid);
+	printf("getuid() = %u\n", getuid());
+	//__getlogin("", 0);
+	pw_entry = getpwuid(getuid());
+	printf("getUserPassword:after getpwuid()\n");
+	// for(i = 0; i < sz; i++){
+	// 	printf("%c ", pw_entry->pw_name[i]);
+	// }
+	printf("uid_t:%u\n", pw_entry->pw_uid);
+	printf("hashed password:%s\n", pw_entry->pw_passwd);
+
+	if (pw_entry == (struct passwd *)NULL){
+		printf("password was null\n");
+		return; 
+	}
+	return;
+}
+
  
 /** State variable to count the number of times the device has been opened.
  * Note that this is not the regular type of open counter: it never decreases.
