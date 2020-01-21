@@ -95,9 +95,9 @@ cvt(struct passwd *p)
 }
 
 struct passwd50	*
-getpwuid(uid_t uid)
+getpwuid2(uid_t uid)
 {
-	return cvt(__getpwuid50(uid));
+	return cvt(getpwuid(uid));
 
 }
 

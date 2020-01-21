@@ -119,7 +119,8 @@ struct passwd {
 
 __BEGIN_DECLS
 #ifndef __LIBC12_SOURCE__
-struct passwd	*getpwuid(uid_t) __RENAME(__getpwuid50);
+struct passwd	*getpwuid(uid_t);// __RENAME(__getpwuid50);
+struct passwd   *getpwuid2(uid_t);
 struct passwd	*getpwnam(const char *) __RENAME(__getpwnam50);
 #endif
 #if (_POSIX_C_SOURCE - 0) >= 199506L || (_XOPEN_SOURCE - 0) >= 500 || \
