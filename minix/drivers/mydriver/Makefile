@@ -8,8 +8,8 @@ FILESDIR= /etc/system.conf.d
 
 CPPFLAGS+= -I${NETBSDSRCDIR}/minix
 
-DPADD+= ${LIBCHARDRIVER} ${LIBSYS} ${LIBCRYPTO} ${LIBSSL}
-LDADD+= -lchardriver -lsys -lcrypto -lssl	# we use both the libsys (to implement a service) and the chardriver protocol
+DPADD+= ${LIBCHARDRIVER} ${LIBSYS} ${LIBCRYPTO} ${LIBSSL} ${LIBC}
+LDADD+= -lchardriver -lsys -lcrypto -lssl -lc	# we use both the libsys (to implement a service) and the chardriver protocol
 
 MAN=
 

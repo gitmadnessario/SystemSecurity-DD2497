@@ -3,6 +3,10 @@ SRCS=	main.c myserver.c
 
 DPADD+=	${LIBSYS}
 LDADD+=	-lsys
+#LDADD+= ../../../../obj.i386/crypto/external/bsd/openssl/lib/libssl/libssl.a
+#LDADD+= ../../../../obj.i386/crypto/external/bsd/openssl/lib/libcrypto/libcrypto.a
+
+#LDADD+= ../../../../obj.i386/lib/libc/libc.a
 
 # FIXME: workaround for the linker pass not seeing weak symbols. The
 # following symbols are essential for magic instrumentation, since they

@@ -4,6 +4,8 @@
 #include <minix/chardriver.h>
 #include <minix/myserver.h>
 #include "mydriver.h"
+
+//#include <openssl/evp.h>
  
 /* SEF functions and variables. */
 static void sef_local_startup(void);
@@ -34,6 +36,7 @@ static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
   switch(type) {
   case SEF_INIT_FRESH:
     printf("%s", HELLO_MESSAGE);
+    myserver_sys1();
     break;
  
   case SEF_INIT_LU:
@@ -120,6 +123,7 @@ static ssize_t mydriver_read(devminor_t UNUSED(minor), u64_t position,
   int ret;
   char *buf = HELLO_MESSAGE;
  
+  //OpenSSL_add_all_algorithms();
   printf("mydriver_read()\n");
  
   /* This is the total size of our device. */
