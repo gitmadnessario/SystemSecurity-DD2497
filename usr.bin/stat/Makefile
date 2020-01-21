@@ -6,7 +6,7 @@ PROG=	stat
 LINKS=	${BINDIR}/stat ${BINDIR}/readlink
 MLINKS=	stat.1 readlink.1
 .endif
-
+CPPFLAGS+=	-I${NETBSDSRCDIR}/lib/libc/include
 COPTS.stat.c += -Wno-format-nonliteral
 
 .include <bsd.prog.mk>

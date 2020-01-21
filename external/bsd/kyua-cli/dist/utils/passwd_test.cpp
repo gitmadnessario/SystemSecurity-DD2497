@@ -93,7 +93,7 @@ ATF_TEST_CASE_BODY(current_user__fake)
 ATF_TEST_CASE_WITHOUT_HEAD(find_user_by_name__ok);
 ATF_TEST_CASE_BODY(find_user_by_name__ok)
 {
-    const struct ::passwd* pw = ::getpwuid(::getuid());
+    const struct ::passwd* pw = ::getpwuid2(::getuid());
     ATF_REQUIRE(pw != NULL);
 
     const passwd_ns::user user = passwd_ns::find_user_by_name(pw->pw_name);
@@ -137,7 +137,7 @@ ATF_TEST_CASE_BODY(find_user_by_uid__ok)
     ATF_REQUIRE_EQ(::getuid(), user.uid);
     ATF_REQUIRE_EQ(::getgid(), user.gid);
 
-    const struct ::passwd* pw = ::getpwuid(::getuid());
+    const struct ::passwd* pw = ::getpwuid2(::getuid());
     ATF_REQUIRE(pw != NULL);
     ATF_REQUIRE_EQ(pw->pw_name, user.name);
 }

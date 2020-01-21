@@ -102,7 +102,7 @@ fn_tilde_expand(const char *txt)
 #elif HAVE_GETPW_R_DRAFT
 		pass = getpwuid_r(getuid(), &pwres, pwbuf, sizeof(pwbuf));
 #else
-		pass = getpwuid(getuid());
+		pass = getpwuid2(getuid());
 #endif
 	} else {
 #ifdef HAVE_GETPW_R_POSIX

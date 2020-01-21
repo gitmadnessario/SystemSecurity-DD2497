@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 	}
 	uid= getuid();
 	if (user == nil) {
-		if ((pw= getpwuid(uid)) == nil) {
+		if ((pw= getpwuid2(uid)) == nil) {
 			fprintf(stderr,
 				"%s: Don't know who you (uid %lu) are!\n",
 				prog_name, (unsigned long) uid);

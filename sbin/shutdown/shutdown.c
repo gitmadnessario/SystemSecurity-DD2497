@@ -221,7 +221,7 @@ main(int argc, char *argv[])
 		(void)printf("Shutdown NOW!\n");
 
 	if (!(whom = getlogin()))
-		whom = (pw = getpwuid(getuid())) ? pw->pw_name : "???";
+		whom = (pw = getpwuid2(getuid())) ? pw->pw_name : "???";
 
 #ifdef DEBUG
 	(void)putc('\n', stdout);

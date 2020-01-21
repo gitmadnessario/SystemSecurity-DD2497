@@ -3130,7 +3130,7 @@ static char *find_home_dir(void){
   {
     struct passwd *pwent;
     uid_t uid = getuid();
-    if( (pwent=getpwuid(uid)) != NULL) {
+    if( (pwent=getpwuid2(uid)) != NULL) {
       home_dir = pwent->pw_dir;
     }
   }

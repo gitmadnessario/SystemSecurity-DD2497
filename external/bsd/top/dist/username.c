@@ -113,7 +113,7 @@ username(int xuid)
        a new entry, then expire is 0 and the next test will be true. */
     if (data->expire <= now)
     {
-	if ((pw = getpwuid(xuid)) != NULL)
+	if ((pw = getpwuid2(xuid)) != NULL)
 	{
 	    strncpy(data->name, pw->pw_name, MAXLOGNAME-1);
 	    data->expire = now + EXPIRETIME;

@@ -79,7 +79,7 @@ shownode(NODE *n, int f, char const *path)
 	if (f & F_UID)
 		printf(" uid=%d", n->st_uid);
 	if (f & F_UNAME) {
-		pw = getpwuid(n->st_uid);
+		pw = NULL;//getpwuid2(n->st_uid);
 		if (pw == NULL)
 			printf(" uid=%d", n->st_uid);
 		else

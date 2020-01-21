@@ -150,7 +150,7 @@ main(int argc, char *argv[])
 	/* Log the reboot. */
 	if (!lflag)  {
 		if ((user = getlogin()) == NULL)
-			user = (pw = getpwuid(getuid())) ?
+			user = (pw = getpwuid2(getuid())) ?
 			    pw->pw_name : "???";
 		if (dohalt) {
 			openlog("halt", LOG_CONS, LOG_AUTH);

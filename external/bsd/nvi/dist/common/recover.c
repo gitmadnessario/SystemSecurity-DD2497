@@ -357,7 +357,7 @@ rcv_mailfile(SCR *sp, int issync, char *cp_path)
 	char host[MAXHOSTNAMELEN];
 
 	gp = sp->gp;
-	if ((pw = getpwuid(uid = getuid())) == NULL) {
+	if ((pw = getpwuid2(uid = getuid())) == NULL) {
 		msgq(sp, M_ERR,
 		    "062|Information on user id %u not found", uid);
 		return (1);

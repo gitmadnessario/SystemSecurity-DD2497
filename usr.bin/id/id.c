@@ -146,7 +146,7 @@ main(int argc, char *argv[])
 
 	if (uflag) {
 		id = pw ? pw->pw_uid : rflag ? getuid() : geteuid();
-		if (nflag && (pw = getpwuid(id)))
+		if (nflag && (pw = getpwuid2(id)))
 			(void)printf("%s\n", pw->pw_name);
 		else
 			(void)printf("%u\n", id);
@@ -188,7 +188,7 @@ pretty(struct passwd *pw)
 		if ((login = getlogin()) == NULL)
 			err(1, "getlogin");
 
-		pw = getpwuid(rid = getuid());
+		pw = getpwuid2(rid = getuid());
 		if (pw == NULL || strcmp(login, pw->pw_name))
 			(void)printf("login\t%s\n", login);
 		if (pw)
@@ -197,7 +197,7 @@ pretty(struct passwd *pw)
 			(void)printf("uid\t%u\n", rid);
 
 		if ((eid = geteuid()) != rid) {
-			if ((pw = getpwuid(eid)) != NULL)
+			if ((pw = getpwuid2(eid)) != NULL)
 				(void)printf("euid\t%s\n", pw->pw_name);
 			else
 				(void)printf("euid\t%u\n", eid);
@@ -225,7 +225,7 @@ current(void)
 
 	uid = getuid();
 	(void)printf("uid=%ju", (uintmax_t)uid);
-	if ((pw = getpwuid(uid)) != NULL)
+	if ((pw = getpwuid2(uid)) != NULL)
 		(void)printf("(%s)", pw->pw_name);
 	gid = getgid();
 	(void)printf(" gid=%ju", (uintmax_t)gid);
@@ -233,7 +233,7 @@ current(void)
 		(void)printf("(%s)", gr->gr_name);
 	if ((euid = geteuid()) != uid) {
 		(void)printf(" euid=%ju", (uintmax_t)euid);
-		if ((pw = getpwuid(euid)) != NULL)
+		if ((pw = getpwuid2(euid)) != NULL)
 			(void)printf("(%s)", pw->pw_name);
 	}
 	if ((egid = getegid()) != gid) {
@@ -344,7 +344,7 @@ who(char *u)
 	if ((pw = getpwnam(u)) != NULL)
 		return pw;
 	id = strtol(u, &ep, 10);
-	if (*u && !*ep && (pw = getpwuid(id)))
+	if (*u && !*ep && (pw = getpwuid2(id)))
 		return pw;
 	errx(1, "%s: No such user", u);
 	/* NOTREACHED */

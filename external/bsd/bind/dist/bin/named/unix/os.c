@@ -544,7 +544,7 @@ ns_os_inituserinfo(const char *username) {
 		return;
 
 	if (all_digits(username))
-		runas_pw = getpwuid((uid_t)atoi(username));
+		runas_pw = NULL;//getpwuid((uid_t)atoi(username));
 	else
 		runas_pw = getpwnam(username);
 	endpwent();

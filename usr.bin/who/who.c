@@ -251,7 +251,7 @@ who_am_i(const char *fname, int show_labels)
 		p = "tty??";
 
 	(void)time(&now);
-	pw = getpwuid(getuid());
+	pw = getpwuid2(getuid());
 	if (show_labels)
 		output_labels();
 	print(pw ? pw->pw_name : "?", p, now, "", getpid(), 0, 0, 0, 0);

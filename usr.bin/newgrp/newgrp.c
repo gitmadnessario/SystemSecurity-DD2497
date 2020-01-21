@@ -73,7 +73,7 @@ main(int argc, char *argv[])
 #endif
 
 	uid = getuid();
-	pwd = getpwuid(uid);
+	pwd = getpwuid2(uid);
 	if (pwd == NULL)
 		errx(EXIT_FAILURE, "who are you?");
 

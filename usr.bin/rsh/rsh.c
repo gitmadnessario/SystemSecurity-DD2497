@@ -147,7 +147,7 @@ main(int argc, char **argv)
 
 #endif /* IN_RCMD */
 
-	if (!(pw = getpwuid(uid = getuid())))
+	if (!(pw = getpwuid2(uid = getuid())))
 		errx(1, "unknown user id");
 
 	if ((name = strdup(pw->pw_name)) == NULL)

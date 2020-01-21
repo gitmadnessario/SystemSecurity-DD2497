@@ -147,7 +147,7 @@ getgroups(int gidsetlen, gid_t *gidset)
 }
 
 struct passwd *
-getpwnam(const char *login)
+getpwnam2(const char *login)
 {
 	struct passwd *p = &PwEntry;
 

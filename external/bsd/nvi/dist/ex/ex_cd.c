@@ -66,7 +66,7 @@ ex_cd(SCR *sp, EXCMD *cmdp)
 	case 0:
 		/* If no argument, change to the user's home directory. */
 		if ((dir = getenv("HOME")) == NULL) {
-			if ((pw = getpwuid(getuid())) == NULL ||
+			if ((pw = getpwuid2(getuid())) == NULL ||
 			    pw->pw_dir == NULL || pw->pw_dir[0] == '\0') {
 				msgq(sp, M_ERR,
 			   "121|Unable to find home directory location");

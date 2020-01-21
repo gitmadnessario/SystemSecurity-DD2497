@@ -99,7 +99,7 @@ main(void)
 			}
 			players[noplayers].uids = uid;
 			players[noplayers].scores = score;
-			p = getpwuid(uid);
+			p = getpwuid2(uid);
 			if (p == NULL)
 				continue;
 			q = p -> pw_name;

@@ -644,7 +644,7 @@ pinode(ino_t ino)
 		uid |= fs2h16(dp->e2di_uid_high) << 16;
 	printf(" OWNER=");
 #ifndef SMALL
-	if (Uflag && (pw = getpwuid(uid)) != 0)
+	if (Uflag && (pw = getpwuid2(uid)) != 0)
 		printf("%s ", pw->pw_name);
 	else
 #endif

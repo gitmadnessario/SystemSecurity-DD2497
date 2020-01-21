@@ -157,7 +157,7 @@ main(int argc, char **argv)
 			if (username != NULL)
 				pw = getpwnam(username);
 			else
-				pw = getpwuid(uid);
+				pw = getpwuid2(uid);
 			if (pw != NULL)
 				use_yp = 0;
 			else {
@@ -190,7 +190,7 @@ main(int argc, char **argv)
 			if (uid && uid != pw->pw_uid)
 				baduser();
 		} else {
-			pw = getpwuid(uid);
+			pw = getpwuid2(uid);
 			if (pw == NULL)
 				errx(1, "unknown user: uid %u", uid);
 		}

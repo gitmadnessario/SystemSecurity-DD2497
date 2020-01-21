@@ -459,7 +459,7 @@ main(int volatile argc, char **volatile argv)
 	if (cp != NULL)
 		pw = getpwnam(cp);
 	if (pw == NULL)
-		pw = getpwuid(getuid());
+		pw = getpwuid2(getuid());
 	if (pw != NULL) {
 		if (localhome == NULL && !EMPTYSTRING(pw->pw_dir))
 			localhome = ftp_strdup(pw->pw_dir);

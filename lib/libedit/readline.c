@@ -242,7 +242,7 @@ _default_history_file(void)
 	if (path)
 		return path;
 
-	if ((p = getpwuid(getuid())) == NULL)
+	if ((p = getpwuid2(getuid())) == NULL)
 		return NULL;
 
 	len = strlen(p->pw_dir) + sizeof("/.history");

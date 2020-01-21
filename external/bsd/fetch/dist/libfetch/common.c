@@ -1,6 +1,6 @@
 /*	$NetBSD: common.c,v 1.2 2011/06/25 20:27:01 christos Exp $	*/
 /*-
- * Copyright (c) 1998-2004 Dag-Erling Coïdan Smørgrav
+ * Copyright (c) 1998-2004 Dag-Erling Coï¿½dan Smï¿½rgrav
  * Copyright (c) 2008, 2010 Joerg Sonnenberger <joerg@NetBSD.org>
  * All rights reserved.
  *
@@ -893,7 +893,7 @@ fetch_netrc_auth(struct url *url)
 		if ((p = getenv("HOME")) != NULL) {
 			struct passwd *pwd;
 
-			if ((pwd = getpwuid(getuid())) == NULL ||
+			if ((pwd = getpwuid2(getuid())) == NULL ||
 			    (p = pwd->pw_dir) == NULL)
 				return (-1);
 		}

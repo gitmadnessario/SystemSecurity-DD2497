@@ -929,7 +929,7 @@ static int
 getnextuid(int sync_uid_gid, int *uid, int low_uid, int high_uid)
 {
 	for (*uid = low_uid ; *uid <= high_uid ; (*uid)++) {
-		if (getpwuid((uid_t)(*uid)) == NULL && *uid != NOBODY_UID) {
+		if (getpwuid2((uid_t)(*uid)) == NULL && *uid != NOBODY_UID) {
 			if (sync_uid_gid) {
 				if (getgrgid((gid_t)(*uid)) == NULL) {
 					return 1;
@@ -1166,7 +1166,7 @@ adduser(char *login_name, user_t *up)
 		}
 	}
 	/* check uid isn't already allocated */
-	if (!(up->u_flags & F_DUPUID) && getpwuid((uid_t)(up->u_uid)) != NULL) {
+	if (!(up->u_flags & F_DUPUID) && getpwuid2((uid_t)(up->u_uid)) != NULL) {
 		(void)close(ptmpfd);
 		(void)pw_abort();
 		errx(EXIT_FAILURE, "Can't add user `%s': "
@@ -1594,7 +1594,7 @@ moduser(char *login_name, char *newlogin, user_t *up, int allow_samba)
 		if (up->u_flags & F_UID) {
 			/* check uid isn't already allocated */
 			if (!(up->u_flags & F_DUPUID) &&
-			    getpwuid((uid_t)(up->u_uid)) != NULL) {
+			    getpwuid2((uid_t)(up->u_uid)) != NULL) {
 				(void)close(ptmpfd);
 				(void)pw_abort();
 				errx(EXIT_FAILURE, "Can't modify user `%s': "
@@ -1794,7 +1794,7 @@ find_user_info(const char *name)
 	if ((pwp = getpwnam(name)) != NULL) {
 		return pwp;
 	}
-	if (is_number(name) && (pwp = getpwuid((uid_t)atoi(name))) != NULL) {
+	if (is_number(name) && (pwp = getpwuid2((uid_t)atoi(name))) != NULL) {
 		return pwp;
 	}
 	return NULL;

@@ -94,7 +94,7 @@ main(int argc, char **argv)
 	if (!file) {
 		if (!(file = *argv)) {
 			if (!(file = getenv("MAIL"))) {
-				if (!(pwd = getpwuid(getuid())))
+				if (!(pwd = getpwuid2(getuid())))
 					errx(1, "no password file entry for you");
 				if ((file = getenv("LOGNAME")) != NULL ||
 				    (file = getenv("USER")) != NULL) {

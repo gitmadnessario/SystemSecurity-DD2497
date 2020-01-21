@@ -550,7 +550,7 @@ post(int iscore, int flag)
 		printf("Your best to date is $%d\n", oldbest);
 
 	/* See if we have a new champ */
-	p = getpwuid(allbwho);
+	p = getpwuid2(allbwho);
 	if (score > allbscore) {
 		lseek(rawscores, 0, SEEK_SET);
 		write(rawscores, &score, sizeof(short));

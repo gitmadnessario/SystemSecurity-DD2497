@@ -88,7 +88,7 @@ getshell(void)
 	if (checkshell(shell))
 		return (shell);
 
-	pw = getpwuid(getuid());
+	pw = getpwuid2(getuid());
 	if (pw != NULL && checkshell(pw->pw_shell))
 		return (pw->pw_shell);
 
@@ -347,7 +347,7 @@ main(int argc, char **argv)
 	if (cfg_file == NULL) {
 		home = getenv("HOME");
 		if (home == NULL || *home == '\0') {
-			pw = getpwuid(getuid());
+			pw = getpwuid2(getuid());
 			if (pw != NULL)
 				home = pw->pw_dir;
 			else

@@ -117,7 +117,7 @@ main(int argc, char **argv)
 	char *mypw = NULL;
 #endif
 
-	if ((pw = getpwuid(getuid())) == NULL)
+	if ((pw = getpwuid2(getuid())) == NULL)
 		errx(1, "unknown uid %lu.", (u_long)uid);
 
 	notimeout = 0;

@@ -142,7 +142,7 @@ main(int argc, char *argv[])
 		errx(1, "%s/tcp: unknown service", shell);
 	port = sp->s_port;
 
-	if ((pwd = getpwuid(userid = getuid())) == NULL)
+	if ((pwd = getpwuid2(userid = getuid())) == NULL)
 		errx(1, "unknown user %d", (int)userid);
 
 	if ((pwname = strdup(pwd->pw_name)) == NULL)

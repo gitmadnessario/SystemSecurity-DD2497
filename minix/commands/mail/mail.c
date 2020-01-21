@@ -207,7 +207,7 @@ char *vec[];
   }
 #endif /* MAILER */
 
-  if (NULL == (pw = getpwuid(getuid()))) {
+  if (NULL == (pw = getpwuid2(getuid()))) {
 	fprintf(stderr, "mail: unknown sender\n");
 	return -1;
   }
@@ -746,7 +746,7 @@ char *whoami()
 {
   struct passwd *pw;
 
-  if (NULL != (pw = getpwuid(getuid())))
+  if (NULL != (pw = getpwuid2(getuid())))
 	return pw->pw_name;
   else
 	return "nobody";

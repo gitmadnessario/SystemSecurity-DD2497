@@ -328,7 +328,7 @@ cmd_string_expand_tilde(const char *s, size_t *p)
 		envent = environ_find(&global_environ, "HOME");
 		if (envent != NULL && *envent->value != '\0')
 			home = envent->value;
-		else if ((pw = getpwuid(getuid())) != NULL)
+		else if ((pw = getpwuid2(getuid())) != NULL)
 			home = pw->pw_dir;
 	} else {
 		cmd_string_ungetc(p);

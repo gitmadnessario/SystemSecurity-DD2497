@@ -2267,7 +2267,7 @@ bozo_setup(bozohttpd_t *httpd, bozoprefs_t *prefs, const char *vhost,
 	bozo_daemon_init(httpd);
 
 	if ((username = bozo_get_pref(prefs, "username")) == NULL) {
-		if ((pw = getpwuid(uid = 0)) == NULL)
+		if ((pw = getpwuid2(uid = 0)) == NULL)
 			bozo_err(httpd, 1, "getpwuid(0): %s", strerror(errno));
 		httpd->username = strdup(pw->pw_name);
 	} else {

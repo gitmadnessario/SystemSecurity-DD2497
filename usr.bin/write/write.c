@@ -223,7 +223,7 @@ do_write(int ttyfd, const char *mytty, const uid_t myuid)
 
 	/* Determine our login name before we re-open stdout */
 	if ((login = getlogin()) == NULL) {
-		if ((pwd = getpwuid(myuid)) != NULL)
+		if ((pwd = getpwuid2(myuid)) != NULL)
 			login = pwd->pw_name;
 		else	login = "???";
 	}

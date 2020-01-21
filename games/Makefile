@@ -8,15 +8,15 @@
 .include <bsd.own.mk>
 
 #MINIX: Not everything yet
-SUBDIR=	adventure arithmetic \
-	banner bcd \
-	colorbars caesar \
-	factor fish fortune \
-	monop morse number \
-	pig ppt primes \
-	rain random rogue snake tetris \
-	wargames worm worms wtf \
-	demo01
+# SUBDIR=	adventure arithmetic \
+# 	banner bcd \
+# 	colorbars caesar \
+# 	factor fish fortune \
+# 	monop morse number \
+# 	pig ppt primes \
+# 	rain random rogue snake tetris \
+# 	wargames worm worms wtf \
+# 	demo01
 
 .if !defined(__MINIX)
 .if ${MKCXX} != "no"

@@ -210,7 +210,7 @@ makemsg(const char *fname)
 
 	if (!nobanner) {
 		if (!(whom = getlogin()))
-			whom = (pw = getpwuid(getuid())) ? pw->pw_name : "???";
+			whom = (pw = getpwuid2(getuid())) ? pw->pw_name : "???";
 		(void)gethostname(hostname, sizeof(hostname));
 		hostname[sizeof(hostname) - 1] = '\0';
 		(void)time(&now);

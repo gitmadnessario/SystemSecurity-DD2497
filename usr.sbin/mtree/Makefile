@@ -13,7 +13,7 @@ SRCS=	compare.c crc.c create.c excludes.c misc.c mtree.c spec.c specspec.c \
 DPADD+= ${LIBUTIL}
 LDADD+= -lutil
 .endif
-
+CPPFLAGS+=	-I${NETBSDSRCDIR}/lib/libc/include
 CPPFLAGS+=	-I${NETBSDSRCDIR}/sbin/mknod
 .PATH:		${NETBSDSRCDIR}/sbin/mknod
 

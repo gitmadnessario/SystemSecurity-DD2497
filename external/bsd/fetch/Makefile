@@ -2,4 +2,6 @@
 
 SUBDIR=		lib
 
+CPPFLAGS+=-I${NETBSDSRCDIR}/lib/libc/include
+
 .include <bsd.subdir.mk>

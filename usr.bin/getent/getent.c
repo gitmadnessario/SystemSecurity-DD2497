@@ -455,7 +455,7 @@ passwd(int argc, char *argv[])
 	} else {
 		for (i = 2; i < argc; i++) {
 			if (parsenum(argv[i], &id))
-				pw = getpwuid((uid_t)id);
+				pw = getpwuid2((uid_t)id);
 			else
 				pw = getpwnam(argv[i]);
 			if (pw != NULL)

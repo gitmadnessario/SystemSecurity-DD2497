@@ -66,7 +66,7 @@ static void run_job(cronjob_t *job)
 			tab_reschedule(job);
 			return;
 		}
-		if ((pw= getpwuid(st.st_uid)) == nil) {
+		if ((pw= getpwuid2(st.st_uid)) == nil) {
 			cronlog(LOG_ERR,
 				"Unknown owner for uid %lu of AT job %s\n",
 				(unsigned long) st.st_uid, job->cmd);

@@ -197,7 +197,7 @@ main(int argc, char **argv)
 	} else if ((caldir = getenv("CALENDAR_DIR")) != NULL) {
 		if (chdir(caldir) != -1)
 			cal();
-	} else if ((pw = getpwuid(geteuid())) != NULL) {
+	} else if ((pw = getpwuid2(geteuid())) != NULL) {
 		if (chdir(pw->pw_dir) != -1)
 			cal();
 	}

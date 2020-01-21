@@ -185,7 +185,7 @@ main(int argc, char **argv)
 	username = getlogin();
 	if (username == NULL || (pwd = getpwnam(username)) == NULL ||
 	    pwd->pw_uid != ruid)
-		pwd = getpwuid(ruid);
+		pwd = getpwuid2(ruid);
 	if (pwd == NULL)
 		errx(EXIT_FAILURE, "who are you?");
 	username = estrdup(pwd->pw_name);

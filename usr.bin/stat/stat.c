@@ -683,7 +683,8 @@ format1(const struct stat *st,
 	case SHOW_st_uid:
 		small = (sizeof(st->st_uid) == 4);
 		data = st->st_uid;
-		if ((pw = getpwuid(st->st_uid)) != NULL)
+		pw = NULL;
+		if (pw != NULL)
 			sdata = pw->pw_name;
 		else {
 			snprintf(sid, sizeof(sid), "(%ld)", (long)st->st_uid);

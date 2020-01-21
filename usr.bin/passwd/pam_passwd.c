@@ -77,7 +77,7 @@ pwpam_process(const char *username, int argc, char **argv)
 
 	/* details about the invoking user for logging */
 	const uid_t i_uid = getuid();
-	const struct passwd *const i_pwd = getpwuid(i_uid);
+	const struct passwd *const i_pwd = getpwuid2(i_uid);
 	const char *const i_username = (i_pwd && i_pwd->pw_name)
 		? i_pwd->pw_name : "(null)";
 

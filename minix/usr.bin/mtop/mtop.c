@@ -330,7 +330,7 @@ static void print_proc(struct tp *tp, u64_t total_ticks)
 	name = pr->p_name;
 
 	if(last_who != euid || !who) {
-		who = getpwuid(euid);
+		who = getpwuid2(euid);
 		last_who = euid;
 	}
 

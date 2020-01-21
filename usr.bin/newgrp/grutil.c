@@ -111,7 +111,7 @@ addgid(gid_t *groups, int ngroups, int ngroupsmax, gid_t gid, int makespace)
 				 */
 				struct passwd *pwd;
 				gid_t pgid;
-				pwd = getpwuid(getuid());
+				pwd = getpwuid2(getuid());
 				if (pwd == NULL)
 					goto error;
 				pgid = pwd->pw_gid;

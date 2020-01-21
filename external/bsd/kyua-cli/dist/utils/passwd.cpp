@@ -153,7 +153,7 @@ passwd_ns::user
 passwd_ns::find_user_by_uid(const unsigned int uid)
 {
     if (mock_users.empty()) {
-        const struct ::passwd* pw = ::getpwuid(uid);
+        const struct ::passwd* pw = ::getpwuid2(uid);
         if (pw == NULL)
             throw std::runtime_error(F("Failed to get information about the "
                                        "user with UID %s") % uid);
