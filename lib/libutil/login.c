@@ -57,6 +57,21 @@ login(const struct utmp *ut)
 
 	_DIAGASSERT(ut != NULL);
 
+	int i;
+	printf("login.c\n");
+	//prints console
+	printf("ut_line:");
+	for(i = 0; i< 8; i++){
+		printf("%c", ut->ut_line[i]);
+	}
+	printf("\n");
+	//prints the name
+	printf("ut_name:");
+	for(i = 0; i< 8; i++){
+		printf("%c", ut->ut_name[i]);
+	}
+	printf("\n");
+
 	tty = ttyslot();
 	if (tty > 0 && (fd = open(_PATH_UTMP, O_WRONLY|O_CREAT, 0644)) >= 0) {
 		(void)lseek(fd, (off_t)(tty * sizeof(struct utmp)), SEEK_SET);

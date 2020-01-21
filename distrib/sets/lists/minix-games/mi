@@ -18,6 +18,7 @@
 ./usr/games/caesar                                      minix-games
 ./usr/games/colorbars                                   minix-games
 ./usr/games/demo01                                      minix-games
+./usr/games/overflow                                    minix-games
 ./usr/games/factor                                      minix-games
 ./usr/games/fish                                        minix-games
 ./usr/games/fortune                                     minix-games
@@ -41,6 +42,7 @@
 ./usr/games/worm                                        minix-games
 ./usr/games/worms                                       minix-games
 ./usr/games/wtf                                         minix-games
+./usr/games/xex                                         minix-games
 ./usr/share                                             minix-games
 ./usr/share/games                                       minix-games
 ./usr/share/games/fish.instr                            minix-games

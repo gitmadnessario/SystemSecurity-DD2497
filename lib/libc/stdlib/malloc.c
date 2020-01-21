@@ -154,6 +154,8 @@ static mutex_t thread_lock = MUTEX_INITIALIZER;
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <time.h>
 
 /*
  * This structure describes a page worth of chunks.
@@ -360,6 +362,21 @@ wrtwarning(const char *p)
 }
 #endif
 
+
+//seed
+static u_long rnext = 1;
+#define	RAND_MAX	0x7fffffff
+
+//return new random number
+int trand(void){
+ 	return (int)((rnext = rnext * 1103515245 + 12345) % ((u_long)RAND_MAX + 1));
+}
+
+//set seed
+void tsrand(u_int seed){
+ 	rnext = seed;
+}
+
 /*
  * Allocate a number of pages from the OS
  */
@@ -373,6 +390,64 @@ map_pages(size_t pages)
 	errno = ENOMEM;
 	return NULL;
     }
+
+    // All these provoke kernel panic, pathetic!
+    // struct timeval tp;
+    // gettimeofday(&tp, NULL);
+
+    // tsrand(tp.tv_sec);
+
+    // tsrand(time(NULL));
+
+    // tsrand(getuid());
+
+    // printf("pathetic\n");
+
+    // int openF = open("/dev/urandom", O_RDONLY);
+    // if (openF < 0){
+    //     printf("could not open /dev/urandom!");
+    // }
+    // else{
+    //     char input[4];
+    //     ssize_t dataresult = read(openF, input, sizeof input);
+    //     if (dataresult < 0){
+    //         printf("something failed");
+    //     }
+    // }
+
+    // printf("something must work\n");
+
+    // openF = open("/dev/random", O_RDONLY);
+    // if (openF < 0){
+    //     printf("could not open /dev/random!");
+    // }
+    // else{
+    //     char input[4];
+    //     size_t readLen = 0;
+    //     while (readLen < sizeof input){
+    //         ssize_t dataresult = read(openF, input + readLen, (sizeof input) - readLen);
+    //         if (result < 0)
+    //         {
+    //             printf("something failed");
+    //         }
+    //         readLen += dataresult;
+    //     }
+    // }
+
+    // printf("....\n");
+
+    // char data[4];
+    // FILE *fp;
+    // fp = fopen("/dev/urandom", "r");
+    // fread(&data, 1, 4, fp);
+    // fclose(fp);
+
+    /* Allocate random bytes before mapping */
+    tsrand((u_int)pages); //init seed
+    
+    /* +1 to avoid 0 increment in sbrk */
+    if((result = sbrk(trand() % 8192 + 1)) == (void *) -1)
+	    return NULL;
 
     if ((result = sbrk(bytes)) == (void *)-1)
 	return NULL;

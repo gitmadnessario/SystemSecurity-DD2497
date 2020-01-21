@@ -19,6 +19,7 @@
 #include <sys/dirent.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdio.h>
 #include "file.h"
 #include "vnode.h"
 #include "vmnt.h"
@@ -29,7 +30,6 @@
  *===========================================================================*/
 int do_read(void)
 {
-
   /*
    * This field is currently reserved for internal usage only, and must be set
    * to zero by the caller.  We may use it for future SA_RESTART support just
@@ -228,7 +228,7 @@ int read_write(struct fproc *rfp, int rw_flag, int fd, struct filp *f,
 	}
 
 	unlock_bsf();
-  } else {				/* Regular files */
+  } else {				/* Regular files */ 
 	if (rw_flag == WRITING) {
 		/* Check for O_APPEND flag. */
 		if (f->filp_flags & O_APPEND) position = vp->v_size;
@@ -238,6 +238,9 @@ int read_write(struct fproc *rfp, int rw_flag, int fd, struct filp *f,
 	if(rw_flag == PEEKING) {
 		r = req_peek(vp->v_fs_e, vp->v_inode_nr, position, size);
 	} else {
+		/* I think we should have the file bytes (buf??) encrypted at this point. */
+		/* check rw_flag to determine encrypt/decrypt operation */
+		/* printf ("%s \n", "FILE READ/WRITE"); */
 		off_t new_pos;
 		r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, position,
 			rw_flag, for_e, buf, size, &new_pos,

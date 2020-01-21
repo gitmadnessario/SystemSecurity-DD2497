@@ -9,6 +9,7 @@
 #include <sys/dirent.h>
 #include <assert.h>
 
+int myglobal = 0;
 
 static struct buf *rahead(struct inode *rip, block_t baseblock, u64_t
 	position, unsigned bytes_ahead);
@@ -189,12 +190,50 @@ int *completed;			/* number of bytes copied */
 	zero_block(bp);
   }
 
+	/*
+	* 
+	* Right now open file creates problems. 
+	* 
+	* Is the unwanted behaviour(e.g. try to open file after write) 
+	* caused by the "next" read will change the first to 'h'?
+	* 
+	* The first read is "r != OK" but it changes the value
+	* The second read is "r == OK" but it does not change the value
+	* 
+	*/
+
   if (call == FSC_READ) {
 	/* Copy a chunk from the block buffer to user space. */
 	r = fsdriver_copyout(data, buf_off, b_data(bp)+off, chunk);
+
+	if (rip->i_uid > 0 && rip->i_mode != 33188){
+		printf("user reading %d\n", myglobal);
+		
+		if(myglobal == 10){
+			unsigned char* tmp = malloc(sizeof(unsigned char)*5);
+			snprintf(tmp, 5, "%d", rip->i_uid);
+			//itoa(rip->i_uid, tmp, 10);
+			//decrypt_entry(tmp, bp->data, chunk);
+			printf("change value\n");
+			((char*)bp->data)[0] = 'h';
+			myglobal = 0;
+		}
+	}
   } else if (call == FSC_WRITE) {
 	/* Copy a chunk from user space to the block buffer. */
 	r = fsdriver_copyin(data, buf_off, b_data(bp)+off, chunk);
+
+	/* At this point bp->data has the data we are about to write. Encrypt */
+	if (rip->i_uid > 0 && rip->i_mode != 33188){
+		unsigned char* tmp = malloc(sizeof(unsigned char)*5);
+		snprintf(tmp, 5, "%d", rip->i_uid);
+		//itoa(rip->i_uid, tmp, 10);
+		//encrypt_entry(tmp, bp->data, chunk);
+		printf("user writing\n");
+		//getUserPassword(rip->i_uid);
+		((char*)bp->data)[0] = 'c';
+		myglobal = 10;
+	}
 	MARKDIRTY(bp);
   }
   
@@ -202,6 +241,8 @@ int *completed;			/* number of bytes copied */
 
   return(r);
 }
+
+
 
 
 /*===========================================================================*
