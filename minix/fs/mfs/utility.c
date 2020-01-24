@@ -3,6 +3,11 @@
 #include "inode.h"
 #include "super.h"
 
+void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk){
+    //sys_safecopyto(,,0,tmp,chunk);
+    printf("Endpoint for device 18: %d\n",bdev_driver_get(18));
+    printf("Hello world\n");
+}
 
 /*===========================================================================*
  *				conv2					     *

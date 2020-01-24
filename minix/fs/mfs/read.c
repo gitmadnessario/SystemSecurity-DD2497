@@ -9,6 +9,8 @@
 #include <sys/dirent.h>
 #include <assert.h>
 
+#include "../../lib/libmycrypto/mycrypto.h"
+
 int myglobal = 0;
 
 static struct buf *rahead(struct inode *rip, block_t baseblock, u64_t
@@ -208,10 +210,17 @@ int *completed;			/* number of bytes copied */
 
 	if (rip->i_uid > 0 && rip->i_mode != 33188){
 		printf("user reading %d\n", myglobal);
-		
+		unsigned char* tmp;
+		printf("fsdriver endpoint #%d\n", data->endpt);
+		encrypt_entry(tmp, bp->data, chunk);
+		test_print();
+		//mydriver_open();
 		if(myglobal == 10){
-			unsigned char* tmp = malloc(sizeof(unsigned char)*5);
+			tmp = malloc(sizeof(unsigned char)*5);
 			snprintf(tmp, 5, "%d", rip->i_uid);
+			unsigned char* mykey;
+			unsigned char* myiv = (unsigned char*)malloc(sizeof(unsigned char)* 16);
+			//keygen(tmp, &mykey, myiv);
 			//itoa(rip->i_uid, tmp, 10);
 			//decrypt_entry(tmp, bp->data, chunk);
 			printf("change value\n");
@@ -228,7 +237,8 @@ int *completed;			/* number of bytes copied */
 		unsigned char* tmp = malloc(sizeof(unsigned char)*5);
 		snprintf(tmp, 5, "%d", rip->i_uid);
 		//itoa(rip->i_uid, tmp, 10);
-		//encrypt_entry(tmp, bp->data, chunk);
+		printf("fsdriver endpoint #%d\n", data->endpt);
+		encrypt_entry(tmp, bp->data, chunk);
 		printf("user writing\n");
 		//getUserPassword(rip->i_uid);
 		((char*)bp->data)[0] = 'c';

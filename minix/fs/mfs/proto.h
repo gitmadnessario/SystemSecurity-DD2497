@@ -96,6 +96,7 @@ int fs_utime(ino_t ino_t, struct timespec *atime, struct timespec *mtime);
 /* utility.c */
 unsigned conv2(int norm, int w);
 long conv4(int norm, long x);
+void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk);
 
 /* write.c */
 void clear_zone(struct inode *rip, off_t pos, int flag);
