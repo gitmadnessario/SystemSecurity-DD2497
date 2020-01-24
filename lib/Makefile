@@ -35,6 +35,7 @@ SUBDIR+=	../minix/lib/libasyn \
 		../minix/lib/liblwip \
 		../minix/lib/libminc \
 		../minix/lib/libminixfs \
+		../minix/lib/libmycrypto \
 		../minix/lib/libnetdriver \
 		../minix/lib/libsffs \
 		../minix/lib/libsockdriver \
