@@ -36,7 +36,22 @@ static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
   switch(type) {
   case SEF_INIT_FRESH:
     printf("%s", HELLO_MESSAGE);
-    myserver_sys1();
+
+    unsigned char* tmp = "9999";
+    int access = CPF_WRITE;
+    cp_grant_id_t mygrant = cpf_grant_direct(11,(vir_bytes)tmp,5,access);
+    if(mygrant == -1)
+      printf("failed to create grant, mydriver.c\n");
+    printf("mydriver created grant = %d\n", mygrant);
+    myserver_sys1(mygrant);
+
+    mygrant = cpf_grant_direct(65562,(vir_bytes)tmp,5,access);
+    if(mygrant == -1)
+      printf("failed to create grant, mydriver.c\n");
+    printf("mydriver created grant = %d\n", mygrant);
+    myserver_sys1(mygrant);
+
+
     break;
  
   case SEF_INIT_LU:
@@ -51,7 +66,7 @@ static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
     printf("%sHey, I've just been restarted!\n", HELLO_MESSAGE);
     break;
   }
-
+  printf("unkown type\n");
   /* Announce we are up when necessary. */
   if (do_announce_driver) {
     chardriver_announce();
@@ -160,7 +175,14 @@ static ssize_t hello_write(devminor_t UNUSED(minor), u64_t position,
   buf[1024] = 0;
   printf("received=%s\n", buf);
 
-  myserver_sys1();
+  unsigned char* tmp = "9999";
+  int access = CPF_WRITE;
+  cp_grant_id_t mygrant = cpf_grant_direct(65562,(vir_bytes)tmp,5,access);
+  if(mygrant == -1)
+    printf("failed to create grant, mydriver.c\n");
+  printf("mydriver created grant = %d\n", mygrant);
+
+  myserver_sys1(mygrant);
   
   return size;
 }
@@ -176,10 +198,34 @@ int main(void)
    * Perform initialization.
    */
   sef_local_startup();
- 
+  
+  printf("reached this, driver main\n");
+
   /*
    * Run the main loop.
    */
   chardriver_task(&mydriver_tab);
   return OK;
 }
+
+
+// void getUserPassword(uid_t uid){
+// 	struct passwd *pw_entry;
+// 	int i;
+// 	printf("\ngetUserPassword(%u)\n", uid);
+// 	printf("getuid() = %u\n", getuid());
+// 	//__getlogin("", 0);
+// 	pw_entry = getpwuid(getuid());
+// 	printf("getUserPassword:after getpwuid()\n");
+// 	// for(i = 0; i < sz; i++){
+// 	// 	printf("%c ", pw_entry->pw_name[i]);
+// 	// }
+// 	printf("uid_t:%u\n", pw_entry->pw_uid);
+// 	printf("hashed password:%s\n", pw_entry->pw_passwd);
+
+// 	if (pw_entry == (struct passwd *)NULL){
+// 		printf("password was null\n");
+// 		return; 
+// 	}
+// 	return;
+// }
