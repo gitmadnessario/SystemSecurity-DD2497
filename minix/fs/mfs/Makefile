@@ -3,12 +3,11 @@ PROG=	mfs
 SRCS=	cache.c link.c \
 	mount.c misc.c open.c protect.c read.c \
 	stadir.c stats.c table.c time.c utility.c \
-	write.c inode.c main.c path.c super.c #\
-	#../../lib/libmycrypto/mycrypto.c
+	write.c inode.c main.c path.c super.c
 
 DPADD+=	${LIBMINIXFS} ${LIBFSDRIVER} ${LIBBDEV} ${LIBSYS}# ${LIBMYCRYPTO} ${LIBCRYPTO} ${LIBSSL}
-LDADD+= -lminixfs -lfsdriver -lbdev -lsys -lmycrypto
+LDADD+= -lminixfs -lfsdriver -lbdev -lsys
 
-CPPFLAGS+= -DDEFAULT_NR_BUFS=1024 #-I../../lib/libmycrypto/mycrypto.h
+CPPFLAGS+= -DDEFAULT_NR_BUFS=1024 -I../../kernel
 
 .include <minix.service.mk>
