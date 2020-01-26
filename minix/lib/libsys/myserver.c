@@ -13,11 +13,22 @@ static int do_invoke_myserver(message *m, int type)
 	return r;
 }
 
-int myserver_sys1(void)
+int myserver_sys1(int32_t input)
 {
 	message m;
 
 	memset(&m, 0, sizeof(m));
+
+	m.m_lc_vfs_getvfsstat.flags = input;
+
 	return do_invoke_myserver(&m, MYSERVER_SYS1);
+}
+
+int32_t myserver_sys2(void){
+	message m;
+
+	memset(&m, 0, sizeof(m));
+
+	return do_invoke_myserver(&m, MYSERVER_SYS2);
 }
 

@@ -37,14 +37,17 @@ int main(int argc, char **argv)
       get_work(&m);
 
       if (is_notify(callnr)) {
-	  printf("MyServer: warning, got illegal notify from: %d\n", m.m_source);
-	  result = EINVAL;
-	  goto send_reply;
+        printf("MyServer: warning, got illegal notify from: %d\n", m.m_source);
+        result = EINVAL;
+        goto send_reply;
       }
       switch (callnr) {
       case MYSERVER_SYS1:
-	  result = do_sys1(&m);
-	  break;
+        result = do_sys1(&m);
+        break;
+      case MYSERVER_SYS2:
+        result = do_sys2(&m);
+        break;
       default: 
 	  printf("MyServer: warning, got illegal request from %d\n", m.m_source);
 	  result = EINVAL;

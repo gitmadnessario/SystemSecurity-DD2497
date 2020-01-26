@@ -1155,6 +1155,7 @@
 #define MYSERVER_BASE 0x1B00
 
 #define MYSERVER_SYS1		(MYSERVER_BASE + 0)	/* Syscall 1 */
+#define MYSERVER_SYS2		(MYSERVER_BASE + 1) /* Syscall 2 */
 
 
 /*===========================================================================*

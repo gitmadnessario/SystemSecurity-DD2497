@@ -9,7 +9,8 @@
 /* myserver.c */
 
 /* U32 */
-int myserver_sys1(void);
+int myserver_sys1(int32_t);
+int32_t myserver_sys2(void);
 
 #endif /* _MINIX_MYSERVER_H */
 
