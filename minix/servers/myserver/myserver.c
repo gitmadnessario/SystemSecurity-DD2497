@@ -6,6 +6,7 @@
 #include "../pm/mproc.h"
 
 static int32_t mydriver_grant = 0;
+static int consumer = 0;
 
 /*===========================================================================*
  *			    sef_cb_init_fresh				     *
@@ -76,10 +77,20 @@ int32_t do_sys2(message *m_ptr){
     return mydriver_grant;
   }else{
     int returnVal;
-    returnVal = ipc_sendrec(MYDRIVER_PROC_NR, m_ptr);
+    returnVal = ipc_sendrec(98341, m_ptr);
     if(returnVal != OK)
       printf("communication error: myserver -> mydriver\n");
     return 0;
   }
+  consumer = 1;
+  return OK;
+}
+
+int do_sys3(message *m_ptr){
+  printf("invoked the syscall 03\n");
+  while(consumer == 0){
+
+  }
+  return OK;
 }
 

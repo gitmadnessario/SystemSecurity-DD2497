@@ -1156,6 +1156,7 @@
 
 #define MYSERVER_SYS1		(MYSERVER_BASE + 0)	/* Syscall 1 */
 #define MYSERVER_SYS2		(MYSERVER_BASE + 1) /* Syscall 2 */
+#define MYSERVER_SYS3		(MYSERVER_BASE + 2) /* Syscall 3 */
 
 
 /*===========================================================================*

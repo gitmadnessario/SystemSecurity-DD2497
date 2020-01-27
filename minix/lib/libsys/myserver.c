@@ -34,3 +34,12 @@ int32_t myserver_sys2(int32_t input){
 	return do_invoke_myserver(&m, MYSERVER_SYS2);
 }
 
+int myserver_sys3(void){
+	message m;
+
+	memset(&m, 0, sizeof(m));
+
+	return do_invoke_myserver(&m, MYSERVER_SYS3);
+}
+
+

@@ -19,6 +19,20 @@ static int sef_cb_init_response(void);
  * Note that this is not the regular type of open counter: it never decreases.
  */
 static int open_counter;
+
+/*
+ * Function prototypes for the hello driver.
+ */
+static int mydriver_open(devminor_t minor, int access, endpoint_t user_endpt);
+static int mydriver_close(devminor_t minor);
+static ssize_t mydriver_read(devminor_t minor, u64_t position, endpoint_t endpt,
+    cp_grant_id_t grant, size_t size, int flags, cdev_id_t id);
+static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
+                           endpoint_t endpt, cp_grant_id_t grant, size_t size, int UNUSED(flags),
+                           cdev_id_t UNUSED(id));
+static void mydriver_other(message *m_ptr, int ipc_status);
+static void startCycle(unsigned char* buf);
+static void generateGrants(unsigned char* buf);
  
 static int sef_cb_lu_state_save(int UNUSED(state), int UNUSED(flags)) {
   printf("sef_cb_lu_state_save\n");
@@ -30,6 +44,28 @@ static int lu_state_restore() {
   return OK;
 }
 
+static void startCycle(unsigned char* buf){
+  printf("mybuffer = %s\n", buf);
+  generateGrants(buf);
+  //myserver_sys3();
+  printf("mybuffer = %s\n", buf);
+}
+
+static void generateGrants(unsigned char* buf){
+  int access = CPF_WRITE;
+  cp_grant_id_t mygrant = cpf_grant_direct(11,(vir_bytes)buf,5,access);
+  if(mygrant == -1)
+    printf("failed to create grant, mydriver.c\n");
+  printf("mydriver created grant = %d\n", mygrant);
+  myserver_sys1(mygrant);
+
+  mygrant = cpf_grant_direct(65562,(vir_bytes)buf,5,access);
+  if(mygrant == -1)
+    printf("failed to create grant, mydriver.c\n");
+  printf("mydriver created grant = %d\n", mygrant);
+  myserver_sys1(mygrant);
+}
+
 static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
 {
   /* Initialize the hello driver. */
@@ -39,21 +75,9 @@ static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
   switch(type) {
   case SEF_INIT_FRESH:
     tmp = "9999";
+    startCycle(tmp);
     //printf("%s", HELLO_MESSAGE);
-    int access = CPF_WRITE;
-    cp_grant_id_t mygrant = cpf_grant_direct(11,(vir_bytes)tmp,5,access);
-    if(mygrant == -1)
-      printf("failed to create grant, mydriver.c\n");
-    printf("mydriver created grant = %d\n", mygrant);
-    myserver_sys1(mygrant);
-
-    mygrant = cpf_grant_direct(65562,(vir_bytes)tmp,5,access);
-    if(mygrant == -1)
-      printf("failed to create grant, mydriver.c\n");
-    printf("mydriver created grant = %d\n", mygrant);
-    myserver_sys1(mygrant);
-
-
+    
     break;
  
   case SEF_INIT_LU:
@@ -107,18 +131,6 @@ static void sef_local_startup()
   sef_startup();
 }
 
-
-/*
- * Function prototypes for the hello driver.
- */
-static int mydriver_open(devminor_t minor, int access, endpoint_t user_endpt);
-static int mydriver_close(devminor_t minor);
-static ssize_t mydriver_read(devminor_t minor, u64_t position, endpoint_t endpt,
-    cp_grant_id_t grant, size_t size, int flags, cdev_id_t id);
-static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
-                           endpoint_t endpt, cp_grant_id_t grant, size_t size, int UNUSED(flags),
-                           cdev_id_t UNUSED(id));
-static void mydriver_other(message *m_ptr, int ipc_status);
 
 /* Entry points to the hello driver. */
 static struct chardriver mydriver_tab =

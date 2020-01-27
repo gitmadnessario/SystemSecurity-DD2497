@@ -48,6 +48,9 @@ int main(int argc, char **argv)
       case MYSERVER_SYS2:
         result = do_sys2(&m);
         break;
+      case MYSERVER_SYS3:
+        result = do_sys3(&m);
+        break;
       default: 
 	  printf("MyServer: warning, got illegal request from %d\n", m.m_source);
 	  result = EINVAL;
