@@ -12,6 +12,7 @@ static void sef_local_startup(void);
 static int sef_cb_init(int type, sef_init_info_t *info);
 static int sef_cb_lu_state_save(int, int);
 static int lu_state_restore(void);
+static int sef_cb_init_response(void);
 
  
 /** State variable to count the number of times the device has been opened.
@@ -20,24 +21,25 @@ static int lu_state_restore(void);
 static int open_counter;
  
 static int sef_cb_lu_state_save(int UNUSED(state), int UNUSED(flags)) {
+  printf("sef_cb_lu_state_save\n");
   return OK;
 }
  
 static int lu_state_restore() {
+  printf("lu_state_restore\n");
   return OK;
 }
-  
+
 static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
 {
   /* Initialize the hello driver. */
   int do_announce_driver = TRUE;
- 
+  unsigned char* tmp;
   open_counter = 0;
   switch(type) {
   case SEF_INIT_FRESH:
-    printf("%s", HELLO_MESSAGE);
-
-    unsigned char* tmp = "9999";
+    tmp = "9999";
+    //printf("%s", HELLO_MESSAGE);
     int access = CPF_WRITE;
     cp_grant_id_t mygrant = cpf_grant_direct(11,(vir_bytes)tmp,5,access);
     if(mygrant == -1)
@@ -65,6 +67,10 @@ static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
   case SEF_INIT_RESTART:
     printf("%sHey, I've just been restarted!\n", HELLO_MESSAGE);
     break;
+
+  default:
+    printf("default case, type = %d\n", type);
+    break;
   }
   printf("unkown type\n");
   /* Announce we are up when necessary. */
@@ -84,7 +90,14 @@ static void sef_local_startup()
   sef_setcb_init_fresh(sef_cb_init);
   sef_setcb_init_lu(sef_cb_init);
   sef_setcb_init_restart(sef_cb_init);
- 
+
+  /* Handle responses */
+  sef_setcb_lu_response(sef_cb_lu_response_rs_reply);
+  /* agree to update immediately when a LU request is received in a supported state */
+  sef_setcb_lu_prepare(sef_cb_lu_prepare_always_ready); 
+  /* support live update starting from any standard state */
+  sef_setcb_lu_state_isvalid(sef_cb_lu_state_isvalid_standard); 
+
   /*
    * Register live update callbacks.
    */
@@ -102,10 +115,10 @@ static int mydriver_open(devminor_t minor, int access, endpoint_t user_endpt);
 static int mydriver_close(devminor_t minor);
 static ssize_t mydriver_read(devminor_t minor, u64_t position, endpoint_t endpt,
     cp_grant_id_t grant, size_t size, int flags, cdev_id_t id);
-static ssize_t hello_write(devminor_t UNUSED(minor), u64_t position,
+static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
                            endpoint_t endpt, cp_grant_id_t grant, size_t size, int UNUSED(flags),
                            cdev_id_t UNUSED(id));
-
+static void mydriver_other(message *m_ptr, int ipc_status);
 
 /* Entry points to the hello driver. */
 static struct chardriver mydriver_tab =
@@ -113,7 +126,8 @@ static struct chardriver mydriver_tab =
  .cdr_open	= mydriver_open,
  .cdr_close	= mydriver_close,
  .cdr_read	= mydriver_read,
- .cdr_write	= hello_write,
+ .cdr_write	= mydriver_write,
+ .cdr_other = mydriver_other,
 };
 
 static int mydriver_open(devminor_t UNUSED(minor), int UNUSED(access),
@@ -157,7 +171,7 @@ static ssize_t mydriver_read(devminor_t UNUSED(minor), u64_t position,
   return size;
 }
 
-static ssize_t hello_write(devminor_t UNUSED(minor), u64_t position,
+static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
                            endpoint_t endpt, cp_grant_id_t grant, size_t size, int UNUSED(flags),
                            cdev_id_t UNUSED(id))
 {
@@ -187,10 +201,10 @@ static ssize_t hello_write(devminor_t UNUSED(minor), u64_t position,
   return size;
 }
 
-// void test_print(void){
-//   OpenSSL_add_all_algorithms();
-//   printf("succesfull call to test_print\n");
-// }
+static void mydriver_other(message *m_ptr, int ipc_status){
+  printf("mydriver_other called succesfully\n");
+}
+
 
 int main(void)
 {
@@ -205,6 +219,11 @@ int main(void)
    * Run the main loop.
    */
   chardriver_task(&mydriver_tab);
+
+  /* The receive loop. */
+	//chardriver_process(&mydriver_tab, &msg, ipc_status);
+
+
   return OK;
 }
 
