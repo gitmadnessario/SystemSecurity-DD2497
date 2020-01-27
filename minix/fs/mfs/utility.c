@@ -13,8 +13,12 @@
 #include <minix/sysinfo.h>
 #include "../../servers/pm/mproc.h"
 
-//endpoint = 98341
-
+/*
+  mydriver  98341
+  vfs       1
+  mfs       65562
+  myserver  11
+*/
 void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_grant_id_t extragrant){
     //int device_num = bdev_driver_get(18);
     //printf("Endpoint for device 18: %d\n", device_num);
@@ -27,6 +31,7 @@ void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_gra
     if(returnVal != OK){
       printf("returnVal = %d\n", returnVal);
     }
+    myserver_sys2(1);
     printf("Hello world\n");
 }
 

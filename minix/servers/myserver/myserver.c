@@ -28,7 +28,8 @@ void getProcess(){
   endpoint_t end_p = 0;
   for (int mslot = 0; mslot < NR_PROCS; mslot++) {
     if (mproc[mslot].mp_flags & IN_USE) {
-      if(mproc[mslot].mp_endpoint == 11 || mproc[mslot].mp_endpoint == 65562 || mproc[mslot].mp_endpoint ==  98341)
+      if(mproc[mslot].mp_endpoint == 11 || mproc[mslot].mp_endpoint == 65562 ||
+       mproc[mslot].mp_endpoint ==  98341 || mproc[mslot].mp_endpoint == 1)
         printf("%d %d %s\n", mproc[mslot].mp_pid, mproc[mslot].mp_endpoint, mproc[mslot].mp_name);
       // if (mproc[mslot].mp_pid == pid)
       //   end_p = mproc[mslot].mp_endpoint;
@@ -69,7 +70,16 @@ int do_sys1(message *m_ptr)
 
 int32_t do_sys2(message *m_ptr){
   printf("invoked the syscall 02\n");
-  printf("returning value %d\n", mydriver_grant);
-  return mydriver_grant;
+
+  if(!m_ptr->m_lc_vfs_getvfsstat.flags){
+    printf("returning value %d\n", mydriver_grant);
+    return mydriver_grant;
+  }else{
+    int returnVal;
+    returnVal = ipc_sendrec(MYDRIVER_PROC_NR, m_ptr);
+    if(returnVal != OK)
+      printf("communication error: myserver -> mydriver\n");
+    return 0;
+  }
 }
 

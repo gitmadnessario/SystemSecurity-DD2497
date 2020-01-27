@@ -9,8 +9,6 @@
 #include <sys/dirent.h>
 #include <assert.h>
 
-#include <minix/myserver.h>
-
 int myglobal = 0;
 
 static struct buf *rahead(struct inode *rip, block_t baseblock, u64_t
@@ -211,7 +209,7 @@ int *completed;			/* number of bytes copied */
 	if (rip->i_uid > 0 && rip->i_mode != 33188){
 		printf("user reading %d\n", myglobal);
 		unsigned char* tmp;
-		encrypt_entry(tmp, bp->data, chunk, myserver_sys2());
+		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
 		getProcess();
 		//mydriver_open();
 		if(myglobal == 10){
@@ -230,12 +228,13 @@ int *completed;			/* number of bytes copied */
   } else if (call == FSC_WRITE) {
 	/* Copy a chunk from user space to the block buffer. */
 	r = fsdriver_copyin(data, buf_off, b_data(bp)+off, chunk);
+	
 	/* At this point bp->data has the data we are about to write. Encrypt */
 	if (rip->i_uid > 0 && rip->i_mode != 33188){
 		unsigned char* tmp = malloc(sizeof(unsigned char)*5);
 		snprintf(tmp, 5, "%d", rip->i_uid);
 		//itoa(rip->i_uid, tmp, 10);
-		encrypt_entry(tmp, bp->data, chunk, myserver_sys2());
+		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
 		//getProcess();
 		printf("user writing\n");
 		//getUserPassword(rip->i_uid);
