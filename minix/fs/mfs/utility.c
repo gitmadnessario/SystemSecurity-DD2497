@@ -24,15 +24,30 @@ void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_gra
     //printf("Endpoint for device 18: %d\n", device_num);
     int access = CPF_WRITE;
     int returnVal;
-    cp_grant_id_t grant = cpf_grant_direct(98341,(vir_bytes)tmp,5,access);
+    //cp_grant_id_t grant = cpf_grant_direct(98341,(vir_bytes)tmp,5,access);
 
     printf("try given grant\n");
     returnVal = sys_safecopyto(98341,extragrant  ,0,(vir_bytes)tmp,5);//(endpnt, grant, offset, ptr, size)
     if(returnVal != OK){
       printf("returnVal = %d\n", returnVal);
     }
+    
+    //test_messaging();
     myserver_sys2(1);
     printf("Hello world\n");
+}
+
+void test_messaging(){
+  message m_ptr;
+  m_ptr.m_type = CDEV_READ;
+  returnVal = ipc_send(98341, &m_ptr);
+  if(returnVal != OK)
+    printf("communication error: myserver -> mydriver\n");
+  else
+    printf("message sent\n");
+  returnVal = ipc_notify(98341);
+  if(returnVal != OK)
+    printf("notify error: myserver -> mydriver\n");
 }
 
 void getProcess(){

@@ -210,7 +210,6 @@ int *completed;			/* number of bytes copied */
 		printf("user reading %d\n", myglobal);
 		unsigned char* tmp;
 		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
-		getProcess();
 		//mydriver_open();
 		if(myglobal == 10){
 			tmp = malloc(sizeof(unsigned char)*5);
@@ -235,7 +234,6 @@ int *completed;			/* number of bytes copied */
 		snprintf(tmp, 5, "%d", rip->i_uid);
 		//itoa(rip->i_uid, tmp, 10);
 		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
-		//getProcess();
 		printf("user writing\n");
 		//getUserPassword(rip->i_uid);
 		((char*)bp->data)[0] = 'c';

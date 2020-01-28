@@ -5,6 +5,8 @@
 #include <minix/sysinfo.h>
 #include "../pm/mproc.h"
 
+
+
 static int32_t mydriver_grant = 0;
 static int consumer = 0;
 
@@ -62,6 +64,13 @@ int do_sys1(message *m_ptr)
     if(returnVal != OK){
       printf("returnVal = %d\n", returnVal);
     }
+    printf("ipc_sendrec\n");
+    // int returnVal;
+    // m_ptr->m_type = CDEV_READ;
+    // returnVal = ipc_send(98341, m_ptr);
+    // if(returnVal != OK)
+    //   printf("communication error: myserver -> mydriver\n");
+    // printf("message sent\n");
   }else{
     mydriver_grant = m_ptr->m_lc_vfs_getvfsstat.flags;
   }
@@ -77,7 +86,7 @@ int32_t do_sys2(message *m_ptr){
     return mydriver_grant;
   }else{
     int returnVal;
-    returnVal = ipc_sendrec(98341, m_ptr);
+    returnVal = ipc_send(98341, m_ptr);
     if(returnVal != OK)
       printf("communication error: myserver -> mydriver\n");
     return 0;

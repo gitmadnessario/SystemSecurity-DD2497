@@ -33,6 +33,7 @@ static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
 static void mydriver_other(message *m_ptr, int ipc_status);
 static void startCycle(unsigned char* buf);
 static void generateGrants(unsigned char* buf);
+static void handleSendReceive();
  
 static int sef_cb_lu_state_save(int UNUSED(state), int UNUSED(flags)) {
   printf("sef_cb_lu_state_save\n");
@@ -44,11 +45,28 @@ static int lu_state_restore() {
   return OK;
 }
 
+static void handleSendReceive(){
+  message m;
+	int ipc_status, reply_status;
+  int r;
+  while (TRUE) {
+
+		/* Receive Message */
+		r = sef_receive_status(ANY, &m, &ipc_status);
+		if (r != OK) {
+			printf("sef_receive_status() failed\n");
+			continue;
+		}
+    printf("got message\n");
+  }
+}
+
 static void startCycle(unsigned char* buf){
   printf("mybuffer = %s\n", buf);
   generateGrants(buf);
   //myserver_sys3();
   printf("mybuffer = %s\n", buf);
+  handleSendReceive();
 }
 
 static void generateGrants(unsigned char* buf){
@@ -218,7 +236,7 @@ static void mydriver_other(message *m_ptr, int ipc_status){
 }
 
 
-int main(void)
+int main(int argc, char **argv)
 {
   /*
    * Perform initialization.
@@ -232,6 +250,8 @@ int main(void)
    */
   chardriver_task(&mydriver_tab);
 
+  //handleSendReceive();
+  
   /* The receive loop. */
 	//chardriver_process(&mydriver_tab, &msg, ipc_status);
 
