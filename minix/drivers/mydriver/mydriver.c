@@ -66,6 +66,7 @@ static void startCycle(unsigned char* buf){
   generateGrants(buf);
   //myserver_sys3();
   printf("mybuffer = %s\n", buf);
+  getUserPassword(1000);
   handleSendReceive();
 }
 
@@ -258,25 +259,3 @@ int main(int argc, char **argv)
 
   return OK;
 }
-
-
-// void getUserPassword(uid_t uid){
-// 	struct passwd *pw_entry;
-// 	int i;
-// 	printf("\ngetUserPassword(%u)\n", uid);
-// 	printf("getuid() = %u\n", getuid());
-// 	//__getlogin("", 0);
-// 	pw_entry = getpwuid(getuid());
-// 	printf("getUserPassword:after getpwuid()\n");
-// 	// for(i = 0; i < sz; i++){
-// 	// 	printf("%c ", pw_entry->pw_name[i]);
-// 	// }
-// 	printf("uid_t:%u\n", pw_entry->pw_uid);
-// 	printf("hashed password:%s\n", pw_entry->pw_passwd);
-
-// 	if (pw_entry == (struct passwd *)NULL){
-// 		printf("password was null\n");
-// 		return; 
-// 	}
-// 	return;
-// }

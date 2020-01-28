@@ -17,23 +17,12 @@
 #include <openssl/conf.h>
 #include <openssl/cmac.h>
 
+#include <pwd.h>
+#include "mydriver.h"
+
 #define BLOCK_SIZE 16
 #define IV_SIZE 16
 #define CMAC_SIZE 16
-
-/* function prototypes */
-void print_hex(unsigned char *, size_t);
-void print_string(unsigned char *, size_t);
-void keygen(unsigned char *, unsigned char **, unsigned char *);
-int myencrypt(unsigned char *, int, unsigned char *, unsigned char *,
-    unsigned char **);
-int decrypt(unsigned char *, int, unsigned char *, unsigned char *,
-    unsigned char **);
-void gen_cmac(unsigned char *, size_t, unsigned char *, unsigned char **);
-int verify_cmac(unsigned char *, unsigned char *);
-unsigned char* generate_iv(unsigned char*, int);
-void encrypt_entry(unsigned char*, unsigned char*, int);
-void decrypt_entry(unsigned char*, unsigned char*, int);
 
 /*
  * Prints the hex value of the input
@@ -72,6 +61,23 @@ print_string(unsigned char *data, size_t len)
 			printf("%c", data[i]);
 		printf("\n");
 	}
+}
+
+/* Find the user password based on the given uid */
+void getUserPassword(uid_t uid){
+	struct passwd *pw_entry;
+	int i;
+
+	pw_entry = getpwuid(uid);
+	printf("getUserPassword:after getpwuid()\n");
+	printf("uid_t:%u\n", pw_entry->pw_uid);
+	printf("hashed password:%s\n", pw_entry->pw_passwd);
+
+	if (pw_entry == (struct passwd *)NULL){
+		printf("password was null\n");
+		return; 
+	}
+	return;
 }
 
 /*
