@@ -1,6 +1,6 @@
 # Makefile for the mydriver driver.
 PROG=   mydriver
-SRCS=   mydriver.c
+SRCS=   mydriver.c crypto.c
 
 FILES=${PROG}.conf
 FILESNAME=${PROG}

@@ -39,6 +39,8 @@ void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_gra
 
 void test_messaging(){
   message m_ptr;
+  int returnVal; 
+  
   m_ptr.m_type = CDEV_READ;
   returnVal = ipc_send(98341, &m_ptr);
   if(returnVal != OK)
