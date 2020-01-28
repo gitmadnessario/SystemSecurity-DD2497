@@ -207,7 +207,7 @@ int *completed;			/* number of bytes copied */
 	r = fsdriver_copyout(data, buf_off, b_data(bp)+off, chunk);
 
 	if (rip->i_uid > 0 && rip->i_mode != 33188){
-		printf("user reading %d\n", myglobal);
+		//printf("user reading %d\n", myglobal);
 		unsigned char* tmp;
 		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
 		//mydriver_open();
@@ -219,7 +219,7 @@ int *completed;			/* number of bytes copied */
 			//keygen(tmp, &mykey, myiv);
 			//itoa(rip->i_uid, tmp, 10);
 			//decrypt_entry(tmp, bp->data, chunk);
-			printf("change value\n");
+			//printf("change value\n");
 			((char*)bp->data)[0] = 'h';
 			myglobal = 0;
 		}
@@ -234,7 +234,7 @@ int *completed;			/* number of bytes copied */
 		snprintf(tmp, 5, "%d", rip->i_uid);
 		//itoa(rip->i_uid, tmp, 10);
 		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
-		printf("user writing\n");
+		//printf("user writing\n");
 		//getUserPassword(rip->i_uid);
 		((char*)bp->data)[0] = 'c';
 		myglobal = 10;

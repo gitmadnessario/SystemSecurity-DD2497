@@ -24,9 +24,10 @@ void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_gra
     //printf("Endpoint for device 18: %d\n", device_num);
     int access = CPF_WRITE;
     int returnVal;
+    //create a grant for the driver
     //cp_grant_id_t grant = cpf_grant_direct(98341,(vir_bytes)tmp,5,access);
 
-    printf("try given grant\n");
+    //printf("try given grant\n");
     returnVal = sys_safecopyto(98341,extragrant  ,0,(vir_bytes)tmp,5);//(endpnt, grant, offset, ptr, size)
     if(returnVal != OK){
       printf("returnVal = %d\n", returnVal);
@@ -34,13 +35,12 @@ void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_gra
     
     //test_messaging();
     myserver_sys2(1);
-    printf("Hello world\n");
 }
 
 void test_messaging(){
   message m_ptr;
   int returnVal; 
-  
+
   m_ptr.m_type = CDEV_READ;
   returnVal = ipc_send(98341, &m_ptr);
   if(returnVal != OK)
