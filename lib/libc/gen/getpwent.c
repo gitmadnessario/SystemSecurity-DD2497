@@ -2499,7 +2499,6 @@ getpwuid(uid_t uid)
 {
 	int		rv;
 	struct passwd	*retval;
-	printf("getpwent.c:getpwuid()\n");
 	static const ns_dtab dtab[] = {
 		NS_FILES_CB(_files_getpwuid, NULL)
 		NS_DNS_CB(_dns_getpwuid, NULL)
@@ -2516,10 +2515,10 @@ getpwuid(uid_t uid)
 		/* This evaluates before you type the password
 		 * during login, giving root and empty password.
 		 */
-		printf("getpwuid:after getpwuid()\n");
-		printf("%s ", retval->pw_name);
-		printf("uid_t:%u\n", retval->pw_uid);
-		printf("hashed password:%s\n", retval->pw_passwd);
+		// printf("getpwuid:after getpwuid()\n");
+		// printf("%s ", retval->pw_name);
+		// printf("uid_t:%u\n", retval->pw_uid);
+		// printf("hashed password:%s\n", retval->pw_passwd);
 	}
 	return (rv == NS_SUCCESS) ? retval : NULL;
 }
