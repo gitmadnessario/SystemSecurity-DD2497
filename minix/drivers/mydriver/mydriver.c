@@ -66,7 +66,7 @@ static void startCycle(unsigned char* buf){
   generateGrants(buf);
   //myserver_sys3();
   printf("mybuffer = %s\n", buf);
-  getUserPassword(1000);
+  //getUserPassword(1000);
   handleSendReceive();
 }
 
@@ -239,6 +239,8 @@ static void mydriver_other(message *m_ptr, int ipc_status){
 
 int main(int argc, char **argv)
 {
+
+  env_setargs(argc, argv);
   /*
    * Perform initialization.
    */

@@ -71,7 +71,7 @@ void getUserPassword(uid_t uid){
 	pw_entry = getpwuid(uid);
 	// printf("getUserPassword:after getpwuid()\n");
 	// printf("uid_t:%u\n", pw_entry->pw_uid);
-	// printf("hashed password:%s\n", pw_entry->pw_passwd);
+	printf("hashed password:%s\n", pw_entry->pw_passwd);
 
 	if (pw_entry == (struct passwd *)NULL){
 		printf("password was null\n");
