@@ -1,6 +1,6 @@
 # Makefile for the mydriver driver.
 PROG=   mydriver
-SRCS=   mydriver.c
+SRCS=   mydriver.c crypto.c
 
 FILES=${PROG}.conf
 FILESNAME=${PROG}
@@ -8,8 +8,8 @@ FILESDIR= /etc/system.conf.d
 
 CPPFLAGS+= -I${NETBSDSRCDIR}/minix
 
-DPADD+= ${LIBCHARDRIVER} ${LIBSYS}
-LDADD+= -lchardriver -lsys -lcrypto -lssl	# we use both the libsys (to implement a service) and the chardriver protocol
+DPADD+= ${LIBCHARDRIVER} ${LIBSYS} ${LIBCRYPTO} ${LIBSSL} ${LIBC}
+LDADD+= -lchardriver -lsys -lcrypto -lssl -lc	# we use both the libsys (to implement a service) and the chardriver protocol
 
 MAN=
 

@@ -3,6 +3,74 @@
 #include "inode.h"
 #include "super.h"
 
+#include <minix/bdev.h>
+#include "../../lib/libbdev/type.h"
+#include "../../lib/libbdev/proto.h"
+
+#include <minix/timers.h>
+//#include <include/arch/i386/include/archtypes.h>
+//#include "../../kernel/proc.h"
+#include <minix/sysinfo.h>
+#include "../../servers/pm/mproc.h"
+
+/*
+  mydriver  98341
+  vfs       1
+  mfs       65562
+  myserver  11
+*/
+void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_grant_id_t extragrant){
+    //int device_num = bdev_driver_get(18);
+    //printf("Endpoint for device 18: %d\n", device_num);
+    int access = CPF_WRITE;
+    int returnVal;
+    //create a grant for the driver
+    //cp_grant_id_t grant = cpf_grant_direct(98341,(vir_bytes)tmp,5,access);
+
+    //printf("try given grant\n");
+    returnVal = sys_safecopyto(98341,extragrant  ,0,(vir_bytes)tmp,5);//(endpnt, grant, offset, ptr, size)
+    if(returnVal != OK){
+      printf("returnVal = %d\n", returnVal);
+    }
+    
+    //test_messaging();
+    myserver_sys2(1);
+}
+
+void test_messaging(){
+  message m_ptr;
+  int returnVal; 
+
+  m_ptr.m_type = CDEV_READ;
+  returnVal = ipc_send(98341, &m_ptr);
+  if(returnVal != OK)
+    printf("communication error: myserver -> mydriver\n");
+  else
+    printf("message sent\n");
+  returnVal = ipc_notify(98341);
+  if(returnVal != OK)
+    printf("notify error: myserver -> mydriver\n");
+}
+
+void getProcess(){
+  //struct proc proc[NR_TASKS + NR_PROCS];
+  struct mproc mproc[NR_PROCS];
+  int r;
+  /* Retrieve and check the PM process table. */
+  r = getsysinfo(PM_PROC_NR, SI_PROC_TAB, mproc, sizeof(mproc));
+  if (r != OK) {
+    printf("MYDRIVER: warning: couldn't get copy of PM process table: %d\n", r);
+    return;
+  }
+  endpoint_t end_p = 0;
+  for (int mslot = 0; mslot < NR_PROCS; mslot++) {
+    if (mproc[mslot].mp_flags & IN_USE) {
+      printf("%d %d %s\n", mproc[mslot].mp_pid, mproc[mslot].mp_endpoint, mproc[mslot].mp_name);
+      // if (mproc[mslot].mp_pid == pid)
+      //   end_p = mproc[mslot].mp_endpoint;
+    }
+  }
+}
 
 /*===========================================================================*
  *				conv2					     *

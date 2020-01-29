@@ -17,6 +17,7 @@ SUBDIR+=	libinputdriver
 SUBDIR+=	liblwip
 SUBDIR+=	libminc
 SUBDIR+=	libminixfs
+SUBDIR+=	libmycrypto
 SUBDIR+=	libnetdriver
 SUBDIR+=	libsffs
 SUBDIR+=	libsockdriver

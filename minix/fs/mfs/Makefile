@@ -5,9 +5,9 @@ SRCS=	cache.c link.c \
 	stadir.c stats.c table.c time.c utility.c \
 	write.c inode.c main.c path.c super.c
 
-DPADD+=	${LIBMINIXFS} ${LIBFSDRIVER} ${LIBBDEV} ${LIBSYS}
+DPADD+=	${LIBMINIXFS} ${LIBFSDRIVER} ${LIBBDEV} ${LIBSYS}# ${LIBMYCRYPTO} ${LIBCRYPTO} ${LIBSSL}
 LDADD+= -lminixfs -lfsdriver -lbdev -lsys
 
-CPPFLAGS+= -DDEFAULT_NR_BUFS=1024
+CPPFLAGS+= -DDEFAULT_NR_BUFS=1024 -I../../kernel
 
 .include <minix.service.mk>

@@ -2493,12 +2493,12 @@ getpwnam_r(const char *name, struct passwd *pwd, char *buffer, size_t buflen,
 	}
 }
 
+//This is called before login.c
 struct passwd *
 getpwuid(uid_t uid)
 {
 	int		rv;
 	struct passwd	*retval;
-
 	static const ns_dtab dtab[] = {
 		NS_FILES_CB(_files_getpwuid, NULL)
 		NS_DNS_CB(_dns_getpwuid, NULL)
@@ -2511,6 +2511,15 @@ getpwuid(uid_t uid)
 	rv = nsdispatch(NULL, dtab, NSDB_PASSWD, "getpwuid", __nsdefaultcompat,
 	    &retval, uid);
 	mutex_unlock(&_pwmutex);
+	if(rv == NS_SUCCESS){
+		/* This evaluates before you type the password
+		 * during login, giving root and empty password.
+		 */
+		// printf("getpwuid:after getpwuid()\n");
+		// printf("%s ", retval->pw_name);
+		// printf("uid_t:%u\n", retval->pw_uid);
+		// printf("hashed password:%s\n", retval->pw_passwd);
+	}
 	return (rv == NS_SUCCESS) ? retval : NULL;
 }
 

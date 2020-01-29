@@ -22,6 +22,7 @@
 #include <minix/sysutil.h>
 
 #include <minix/fsdriver.h>
+#include <minix/myserver.h>
 
 #include "mfsdir.h"
 #include "const.h"

@@ -1125,6 +1125,7 @@
 ./usr/include/libdde/usb_server.h                       minix-comp
 ./usr/include/libelf.h                                  minix-comp
 ./usr/include/libexec.h                                 minix-comp
+./mycrypto.h                                            minix-comp
 ./usr/include/libgen.h                                  minix-comp
 ./usr/include/libintl.h                                 minix-comp
 ./usr/include/libutil.h                                 minix-comp
@@ -1199,6 +1200,7 @@
 ./usr/include/minix/drivers.h                           minix-comp
 ./usr/include/minix/drvlib.h                            minix-comp
 ./usr/include/minix/ds.h                                minix-comp
+./usr/include/minix/myserver.h                          minix-comp
 ./usr/include/minix/endpoint.h                          minix-comp
 ./usr/include/minix/fb.h                                minix-comp
 ./usr/include/minix/fsdriver.h                          minix-comp
@@ -1911,6 +1913,7 @@
 ./usr/lib/bc/libfetch.a                                 minix-comp      bitcode
 ./usr/lib/bc/libform.a                                  minix-comp      bitcode
 ./usr/lib/bc/libfsdriver.a                              minix-comp      bitcode
+./usr/lib/bc/libmycrypto.acct                           minix-comp      bitcode
 ./usr/lib/bc/libgcc_s.a                                 minix-comp      bitcode
 ./usr/lib/bc/libhgfs.a                                  minix-comp      bitcode
 ./usr/lib/bc/libiberty.a                                minix-comp      bitcode,binutils
@@ -2065,6 +2068,8 @@
 ./usr/lib/libform_pic.a                                 minix-comp
 ./usr/lib/libfsdriver.a                                 minix-comp
 ./usr/lib/libfsdriver_pic.a                             minix-comp
+./usr/lib/libmycrypto.a                                 minix-comp
+./usr/lib/libmycrypto_pic.a                             minix-comp
 ./usr/lib/libgcc.a                                      minix-comp      gcc=45
 ./usr/lib/libgcc_eh.a                                   minix-comp      gcc=45
 ./usr/lib/libgcc_s.a                                    minix-comp

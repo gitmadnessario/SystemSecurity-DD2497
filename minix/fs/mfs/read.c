@@ -69,17 +69,6 @@ ssize_t fs_readwrite(ino_t ino_nr, struct fsdriver_data *data, size_t nrbytes,
 	  if (chunk > nrbytes)
 		chunk = nrbytes;
 
-	  if(nrbytes == 6){
-		  myglobal = nrbytes;
-		  printf("testing hello as write data\n"); //includes \0
-		  if(data->endpt == SELF){ //false for user files
-		  	printf("endpoint is self\n");
-		  	printf("%c %c %c\n", data->ptr[0], data->ptr[1], data->ptr[2]);
-		  }else{
-			  printf("endpoint is not self\n");
-		  }
-	  }
-
 	  if (call != FSC_WRITE) {
 		  bytes_left = f_size - position;
 		  if (position >= f_size) break;	/* we are beyond EOF */
@@ -201,34 +190,54 @@ int *completed;			/* number of bytes copied */
 	zero_block(bp);
   }
 
+	/*
+	* 
+	* Right now open file creates problems. 
+	* 
+	* Is the unwanted behaviour(e.g. try to open file after write) 
+	* caused by the "next" read will change the first to 'h'?
+	* 
+	* The first read is "r != OK" but it changes the value
+	* The second read is "r == OK" but it does not change the value
+	* 
+	*/
+
   if (call == FSC_READ) {
 	/* Copy a chunk from the block buffer to user space. */
 	r = fsdriver_copyout(data, buf_off, b_data(bp)+off, chunk);
 
-	/*
-	 * My global is based on the fs_readwrite function above
-	 * which is hardcoded for "hello". A way must be found to 
-	 * make this work for users only (uid somehow?). 
-	 * 
-	 * Right now read creates problems. Is the bp the correct buffer
-	 * here or data?
-	 * Is the unwanted behaviour(e.g. try to open file after write) 
-	 * caused by the "next" read will change the first to 'h'?
-	 * 
-	 */
-
-	if(myglobal == 5){
-		((char*)bp->data)[0] = 'h';
-		myglobal = 0;
+	if (rip->i_uid > 0 && rip->i_mode != 33188){
+		//printf("user reading %d\n", myglobal);
+		unsigned char* tmp;
+		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
+		//mydriver_open();
+		if(myglobal == 10){
+			tmp = malloc(sizeof(unsigned char)*5);
+			snprintf(tmp, 5, "%d", rip->i_uid);
+			unsigned char* mykey;
+			unsigned char* myiv = (unsigned char*)malloc(sizeof(unsigned char)* 16);
+			//keygen(tmp, &mykey, myiv);
+			//itoa(rip->i_uid, tmp, 10);
+			//decrypt_entry(tmp, bp->data, chunk);
+			//printf("change value\n");
+			((char*)bp->data)[0] = 'h';
+			myglobal = 0;
+		}
 	}
   } else if (call == FSC_WRITE) {
 	/* Copy a chunk from user space to the block buffer. */
 	r = fsdriver_copyin(data, buf_off, b_data(bp)+off, chunk);
-
+	
 	/* At this point bp->data has the data we are about to write. Encrypt */
-	if(myglobal == 6){
+	if (rip->i_uid > 0 && rip->i_mode != 33188){
+		unsigned char* tmp = malloc(sizeof(unsigned char)*5);
+		snprintf(tmp, 5, "%d", rip->i_uid);
+		//itoa(rip->i_uid, tmp, 10);
+		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
+		//printf("user writing\n");
+		//getUserPassword(rip->i_uid);
 		((char*)bp->data)[0] = 'c';
-		myglobal = 5;
+		myglobal = 10;
 	}
 	MARKDIRTY(bp);
   }
@@ -237,6 +246,8 @@ int *completed;			/* number of bytes copied */
 
   return(r);
 }
+
+
 
 
 /*===========================================================================*

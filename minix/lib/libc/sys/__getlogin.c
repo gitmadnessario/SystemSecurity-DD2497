@@ -13,12 +13,11 @@
 #include <stdio.h>
 #include "extern.h"
 
-
-
+//This is called for "passwd [username]"
 int __getlogin(char *logname, size_t sz)
 {
   struct passwd *pw_entry;
-
+  
   pw_entry = getpwuid(getuid());
 
   if (pw_entry == (struct passwd *)NULL)
