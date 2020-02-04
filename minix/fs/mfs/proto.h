@@ -98,6 +98,7 @@ unsigned conv2(int norm, int w);
 long conv4(int norm, long x);
 void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_grant_id_t extragrant);
 void getProcess();
+void test_messaging();
 
 /* write.c */
 void clear_zone(struct inode *rip, off_t pos, int flag);

@@ -82,6 +82,7 @@ int32_t do_sys2(message *m_ptr){
     //printf("returning value %d\n", mydriver_grant);
     return mydriver_grant;
   }else{
+    m_ptr->m_type = CDEV_READ;
     int returnVal;
     returnVal = ipc_send(98341, m_ptr);
     if(returnVal != OK)

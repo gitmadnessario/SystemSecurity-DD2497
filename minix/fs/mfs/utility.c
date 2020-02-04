@@ -32,8 +32,8 @@ void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_gra
     if(returnVal != OK){
       printf("returnVal = %d\n", returnVal);
     }
-    
-    //test_messaging();
+    //getProcess();
+    test_messaging();
     myserver_sys2(1);
 }
 
@@ -44,12 +44,12 @@ void test_messaging(){
   m_ptr.m_type = CDEV_READ;
   returnVal = ipc_send(98341, &m_ptr);
   if(returnVal != OK)
-    printf("communication error: myserver -> mydriver\n");
+    printf("communication error: mfs -> mydriver\n");
   else
     printf("message sent\n");
   returnVal = ipc_notify(98341);
   if(returnVal != OK)
-    printf("notify error: myserver -> mydriver\n");
+    printf("notify error: mfs -> mydriver\n");
 }
 
 void getProcess(){
@@ -59,13 +59,15 @@ void getProcess(){
   /* Retrieve and check the PM process table. */
   r = getsysinfo(PM_PROC_NR, SI_PROC_TAB, mproc, sizeof(mproc));
   if (r != OK) {
-    printf("MYDRIVER: warning: couldn't get copy of PM process table: %d\n", r);
+    printf("MFS: warning: couldn't get copy of PM process table: %d\n", r);
     return;
   }
   endpoint_t end_p = 0;
   for (int mslot = 0; mslot < NR_PROCS; mslot++) {
     if (mproc[mslot].mp_flags & IN_USE) {
-      printf("%d %d %s\n", mproc[mslot].mp_pid, mproc[mslot].mp_endpoint, mproc[mslot].mp_name);
+      if(mproc[mslot].mp_endpoint == 11 || mproc[mslot].mp_endpoint == 65562 ||
+       mproc[mslot].mp_endpoint ==  98341 || mproc[mslot].mp_endpoint == 1)
+        printf("%d %d %s\n", mproc[mslot].mp_pid, mproc[mslot].mp_endpoint, mproc[mslot].mp_name);
       // if (mproc[mslot].mp_pid == pid)
       //   end_p = mproc[mslot].mp_endpoint;
     }

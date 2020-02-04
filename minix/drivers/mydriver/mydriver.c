@@ -37,6 +37,8 @@ static void mydriver_other(message *m_ptr, int ipc_status);
 static void startCycle(unsigned char* buf);
 static void generateGrants(unsigned char* buf);
 static void handleSendReceive();
+
+unsigned char* internal_buffer = NULL;
  
 static int sef_cb_lu_state_save(int UNUSED(state), int UNUSED(flags)) {
   printf("sef_cb_lu_state_save\n");
@@ -53,22 +55,34 @@ static void handleSendReceive(){
 	int ipc_status, reply_status;
   int r;
   while (TRUE) {
-
+    printf("waiting for message\n");
 		/* Receive Message */
 		r = sef_receive_status(ANY, &m, &ipc_status);
 		if (r != OK) {
 			printf("sef_receive_status() failed\n");
 			continue;
 		}
-    printf("got message\n");
+    switch (m.m_type)
+    {
+    case CDEV_READ:
+      printf("internal buffer = %s\n", internal_buffer);
+      break;
+    case CDEV_WRITE:
+      printf("write buffer\n");
+      break;
+    default:
+      printf("got message\n");
+      break;
+    }
   }
 }
 
 static void startCycle(unsigned char* buf){
-  printf("mybuffer = %s\n", buf);
+  internal_buffer = buf;
+  printf("mybuffer = %s\n", internal_buffer);
   generateGrants(buf);
   //myserver_sys3();
-  printf("mybuffer = %s\n", buf);
+  printf("mybuffer = %s\n", internal_buffer);
   //getUserPassword(1000);
   handleSendReceive();
 }
@@ -223,14 +237,14 @@ static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
   buf[1024] = 0;
   printf("received=%s\n", buf);
 
-  unsigned char* tmp = "9999";
-  int access = CPF_WRITE;
-  cp_grant_id_t mygrant = cpf_grant_direct(65562,(vir_bytes)tmp,5,access);
-  if(mygrant == -1)
-    printf("failed to create grant, mydriver.c\n");
-  printf("mydriver created grant = %d\n", mygrant);
+  // unsigned char* tmp = "9999";
+  // int access = CPF_WRITE;
+  // cp_grant_id_t mygrant = cpf_grant_direct(65562,(vir_bytes)tmp,5,access);
+  // if(mygrant == -1)
+  //   printf("failed to create grant, mydriver.c\n");
+  // printf("mydriver created grant = %d\n", mygrant);
 
-  myserver_sys1(mygrant);
+  // myserver_sys1(mygrant);
   
   return size;
 }
@@ -254,13 +268,9 @@ int main(int argc, char **argv)
   /*
    * Run the main loop.
    */
-  chardriver_task(&mydriver_tab);
+  //chardriver_task(&mydriver_tab);
 
-  //handleSendReceive();
+  handleSendReceive();
   
-  /* The receive loop. */
-	//chardriver_process(&mydriver_tab, &msg, ipc_status);
-
-
   return OK;
 }
