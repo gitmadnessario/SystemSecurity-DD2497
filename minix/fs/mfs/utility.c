@@ -8,70 +8,92 @@
 #include "../../lib/libbdev/proto.h"
 
 #include <minix/timers.h>
-//#include <include/arch/i386/include/archtypes.h>
-//#include "../../kernel/proc.h"
 #include <minix/sysinfo.h>
 #include "../../servers/pm/mproc.h"
+#include <stdlib.h>
+#include <string.h>
 
-/*
-  mydriver  98341
-  vfs       1
-  mfs       65562
-  myserver  11
-*/
-void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_grant_id_t extragrant){
-    //int device_num = bdev_driver_get(18);
-    //printf("Endpoint for device 18: %d\n", device_num);
-    int access = CPF_WRITE;
+/** Copies the data to the driver, passes the inode and the user id and
+ *  retrieves the encrypted content along with the cmac
+ */
+unsigned char* encrypt_entry(struct inode* rip, unsigned char* data, 
+  size_t chunk, uid_t uid){
     int returnVal;
-    //create a grant for the driver
-    //cp_grant_id_t grant = cpf_grant_direct(98341,(vir_bytes)tmp,5,access);
-
-    //printf("try given grant\n");
-    returnVal = sys_safecopyto(98341,extragrant  ,0,(vir_bytes)tmp,5);//(endpnt, grant, offset, ptr, size)
+    endpoint_t endpoint = myserver_sys3(); //get endpoint of mydriver
+    cp_grant_id_t extragrant = myserver_sys2(1); //get write grant
+    returnVal = sys_safecopyto(endpoint,extragrant, 0,(vir_bytes)data,chunk);
     if(returnVal != OK){
       printf("returnVal = %d\n", returnVal);
     }
-    //getProcess();
-    test_messaging();
-    myserver_sys2(1);
+    notify_driver(endpoint,rip,chunk, uid, CDEV_WRITE);
+    extragrant = myserver_sys2(0); //get read grant
+    //cipher + cmac => +16
+    returnVal = sys_safecopyfrom(endpoint,extragrant, 0,(vir_bytes)data,chunk+16);
+    if(returnVal != OK){
+      printf("returnVal = %d\n", returnVal);
+    }
+    return data;
 }
 
-void test_messaging(){
+/** 
+ *  Copies the data to the driver, passes the inode and the user id and
+ *  retrieves the decrypted content.
+ */
+unsigned char* decrypt_entry(struct inode* rip, unsigned char* data, 
+  size_t chunk, uid_t uid){
+    int returnVal;
+    endpoint_t endpoint = myserver_sys3(); //get endpoint of mydriver
+    cp_grant_id_t extragrant = myserver_sys2(1); //get write grant
+    returnVal = sys_safecopyto(endpoint,extragrant, 0,(vir_bytes)data,chunk);
+    if(returnVal != OK){
+      printf("returnVal = %d\n", returnVal);
+    }
+    notify_driver(endpoint, rip, chunk, uid, CDEV_READ);
+    extragrant = myserver_sys2(0); //get read grant
+    //cmac removed => will use chunk - 16 
+    returnVal = sys_safecopyfrom(endpoint,extragrant, 0,(vir_bytes)data,chunk - 16);
+    if(returnVal != OK){
+      printf("returnVal = %d\n", returnVal);
+    }
+    return data;
+}
+
+/**
+ * Calls the driver and passes the user id.
+ */
+void notify_driver(endpoint_t endpoint, struct inode* rip, size_t chunk, 
+  uid_t uid, int access){
   message m_ptr;
   int returnVal; 
 
-  m_ptr.m_type = CDEV_READ;
-  returnVal = ipc_send(98341, &m_ptr);
+  //no need to create new message type, use this
+  m_ptr.m_type = access;
+  m_ptr.m_vm_vfs_mmap.clearend = uid;
+  m_ptr.m_vm_vfs_mmap.dev = chunk;
+  m_ptr.m_vm_vfs_mmap.ino = rip->i_num;
+
+  returnVal = ipc_send(endpoint, &m_ptr);
   if(returnVal != OK)
     printf("communication error: mfs -> mydriver\n");
-  else
-    printf("message sent\n");
-  returnVal = ipc_notify(98341);
-  if(returnVal != OK)
-    printf("notify error: mfs -> mydriver\n");
+  else{
+    //all good
+  }
 }
 
-void getProcess(){
-  //struct proc proc[NR_TASKS + NR_PROCS];
-  struct mproc mproc[NR_PROCS];
-  int r;
-  /* Retrieve and check the PM process table. */
-  r = getsysinfo(PM_PROC_NR, SI_PROC_TAB, mproc, sizeof(mproc));
-  if (r != OK) {
-    printf("MFS: warning: couldn't get copy of PM process table: %d\n", r);
-    return;
+/**
+ * A simple XOR operation as a prototype. 
+ * uid is used as a key in a cyclic fashion without any
+ * further expansion.
+ */ 
+unsigned char* simpleXOR(unsigned char* uid, unsigned char* blob, size_t size){
+  int i;
+  int key_length = strlen(uid);
+  unsigned char* tmp = (unsigned char*)malloc(sizeof(char)*size);
+  for(i = 0; i < size; i++ ){
+    tmp[i] = blob[i] ^ uid[i % key_length];
   }
-  endpoint_t end_p = 0;
-  for (int mslot = 0; mslot < NR_PROCS; mslot++) {
-    if (mproc[mslot].mp_flags & IN_USE) {
-      if(mproc[mslot].mp_endpoint == 11 || mproc[mslot].mp_endpoint == 65562 ||
-       mproc[mslot].mp_endpoint ==  98341 || mproc[mslot].mp_endpoint == 1)
-        printf("%d %d %s\n", mproc[mslot].mp_pid, mproc[mslot].mp_endpoint, mproc[mslot].mp_name);
-      // if (mproc[mslot].mp_pid == pid)
-      //   end_p = mproc[mslot].mp_endpoint;
-    }
-  }
+  memcpy(blob, tmp, size);
+  return tmp;
 }
 
 /*===========================================================================*
