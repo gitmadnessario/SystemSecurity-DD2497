@@ -7,8 +7,8 @@
 
 
 
-static int32_t mydriver_grant = 0;
-static int consumer = 0;
+static int32_t mydriver_readGrant = 0;
+static int32_t mydriver_writeGrant = 0;
 
 /*===========================================================================*
  *			    sef_cb_init_fresh				     *
@@ -18,7 +18,7 @@ int sef_cb_init_fresh(int UNUSED(type), sef_init_info_t *info)
   return(OK);
 }
 
-void getProcess(){
+int32_t getProcess(){
   //struct proc proc[NR_TASKS + NR_PROCS];
   struct mproc mproc[NR_PROCS];
   int r;
@@ -26,18 +26,16 @@ void getProcess(){
   r = getsysinfo(PM_PROC_NR, SI_PROC_TAB, mproc, sizeof(mproc));
   if (r != OK) {
     printf("MYDRIVER: warning: couldn't get copy of PM process table: %d\n", r);
-    return;
+    return -1;
   }
   endpoint_t end_p = 0;
   for (int mslot = 0; mslot < NR_PROCS; mslot++) {
     if (mproc[mslot].mp_flags & IN_USE) {
-      if(mproc[mslot].mp_endpoint == 11 || mproc[mslot].mp_endpoint == 65562 ||
-       mproc[mslot].mp_endpoint ==  98341 || mproc[mslot].mp_endpoint == 1)
-        printf("%d %d %s\n", mproc[mslot].mp_pid, mproc[mslot].mp_endpoint, mproc[mslot].mp_name);
-      // if (mproc[mslot].mp_pid == pid)
-      //   end_p = mproc[mslot].mp_endpoint;
+      if(strcmp(mproc[mslot].mp_name, "mydriver") == 0)
+        return mproc[mslot].mp_endpoint;
     }
   }
+  return -1;
 }
 
 
@@ -46,58 +44,36 @@ void getProcess(){
  *===========================================================================*/
 int do_sys1(message *m_ptr)
 {
-  //printf("%u\n",getuid());
-  //printf("invoked the syscall 01\n");
 
-
-  //printf("received message: %d\n", m_ptr->m_lc_vfs_getvfsstat.flags);
   //getProcess();
 
   unsigned char* tmp = "1234";
   int access = CPF_WRITE;
   int returnVal;
-  if(mydriver_grant == 0){
-    mydriver_grant = m_ptr->m_lc_vfs_getvfsstat.flags;
-    returnVal = sys_safecopyto(98341,mydriver_grant, 0, (vir_bytes)tmp, 5);//(endpnt, grant, offset, ptr, size)
-    if(returnVal != OK){
-      printf("returnVal = %d\n", returnVal);
-    }
-    // int returnVal;
-    // m_ptr->m_type = CDEV_READ;
-    // returnVal = ipc_send(98341, m_ptr);
-    // if(returnVal != OK)
-    //   printf("communication error: myserver -> mydriver\n");
-    // printf("message sent\n");
+  if(mydriver_readGrant == 0){
+    mydriver_readGrant = m_ptr->m_lc_vfs_getvfsstat.flags;
+
   }else{
-    mydriver_grant = m_ptr->m_lc_vfs_getvfsstat.flags;
+    mydriver_writeGrant = m_ptr->m_lc_vfs_getvfsstat.flags;
   }
   
   return(OK);
 }
 
 int32_t do_sys2(message *m_ptr){
-  //printf("invoked the syscall 02\n");
-
-  if(!m_ptr->m_lc_vfs_getvfsstat.flags){
-    //printf("returning value %d\n", mydriver_grant);
-    return mydriver_grant;
+  if(m_ptr->m_lc_vfs_getvfsstat.flags){
+    return mydriver_writeGrant;
   }else{
-    m_ptr->m_type = CDEV_READ;
-    int returnVal;
-    returnVal = ipc_send(98341, m_ptr);
-    if(returnVal != OK)
-      printf("communication error: myserver -> mydriver\n");
-    return 0;
+    return mydriver_readGrant;
+
   }
-  consumer = 1;
   return OK;
 }
 
 int do_sys3(message *m_ptr){
-  printf("invoked the syscall 03\n");
-  while(consumer == 0){
+
+    return getProcess();
 
   }
-  return OK;
 }
 
