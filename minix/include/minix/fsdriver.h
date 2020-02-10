@@ -23,6 +23,7 @@ struct fsdriver_data {
 		char *ptr;		/* local pointer, if endpt == SELF */
 	};
 	size_t size;			/* total buffer size (check only) */
+	uid_t uid;			/* real uid */
 };
 
 /* Opaque data structure for the fsdriver_dentry_ functions. */

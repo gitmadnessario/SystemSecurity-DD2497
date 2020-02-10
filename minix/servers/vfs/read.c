@@ -244,7 +244,7 @@ int read_write(struct fproc *rfp, int rw_flag, int fd, struct filp *f,
 		off_t new_pos;
 		r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, position,
 			rw_flag, for_e, buf, size, &new_pos,
-			&cum_io_incr);
+			&cum_io_incr, rfp->fp_realuid);
 
 		if (r >= 0) {
 			position = new_pos;
@@ -366,7 +366,7 @@ int rw_pipe(int rw_flag, endpoint_t usr_e, struct filp *f, int callnr, int fd,
 	panic("unmapped pipe");
 
   r = req_readwrite(vp->v_mapfs_e, vp->v_mapinode_nr, position, rw_flag, usr_e,
-		    buf, size, &new_pos, &cum_io_incr);
+		    buf, size, &new_pos, &cum_io_incr, 0);
 
   if (r != OK) {
 	assert(r != SUSPEND);

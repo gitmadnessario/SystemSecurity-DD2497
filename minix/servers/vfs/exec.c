@@ -556,7 +556,7 @@ vir_bytes *vsp;
 
   /* Issue request */
   r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, pos, READING, VFS_PROC_NR,
-			(vir_bytes) buf, sizeof(buf), &new_pos, &cum_io);
+			(vir_bytes) buf, sizeof(buf), &new_pos, &cum_io, 0);
 
   if (r != OK) return(r);
 
@@ -703,7 +703,7 @@ static int read_seg(struct exec_info *execi, off_t off, vir_bytes seg_addr, size
 
   if ((r = req_readwrite(vp->v_fs_e, vp->v_inode_nr, off, READING,
 		 execi->proc_e, (vir_bytes) seg_addr, seg_bytes,
-		 &new_pos, &cum_io)) != OK) {
+		 &new_pos, &cum_io, 0)) != OK) {
     printf("VFS: read_seg: req_readwrite failed (data)\n");
     return(r);
   }
@@ -753,7 +753,7 @@ static int map_header(struct vfs_exec_info *execi)
 
   r = req_readwrite(execi->vp->v_fs_e, execi->vp->v_inode_nr,
   	pos, READING, VFS_PROC_NR, (vir_bytes) hdr,
-	execi->args.hdr_len, &new_pos, &cum_io);
+	execi->args.hdr_len, &new_pos, &cum_io, 0);
   if (r != OK) {
 	printf("VFS: exec: map_header: req_readwrite failed\n");
 	return(r);

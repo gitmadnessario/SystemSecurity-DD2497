@@ -2126,7 +2126,8 @@ typedef struct {
 	cp_grant_id_t grant;
 	size_t nbytes;
 
-	uint8_t data[32];
+	uid_t uid;
+	uint8_t data[28];
 } mess_vfs_fs_readwrite;
 _ASSERT_MSG_SIZE(mess_vfs_fs_readwrite);
 

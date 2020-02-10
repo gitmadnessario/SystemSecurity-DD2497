@@ -170,6 +170,7 @@ read_write(const struct fsdriver * __restrict fdp,
 	data.endpt = m_in->m_source;
 	data.grant = m_in->m_vfs_fs_readwrite.grant;
 	data.size = nbytes;
+	data.uid = m_in->m_vfs_fs_readwrite.uid;
 
 	if (call == FSC_WRITE)
 		r = fdp->fdr_write(ino_nr, &data, nbytes, pos, call);

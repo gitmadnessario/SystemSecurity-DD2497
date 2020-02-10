@@ -834,7 +834,7 @@ int req_readsuper(
 static int req_readwrite_actual(endpoint_t fs_e, ino_t inode_nr, off_t pos,
 	int rw_flag, endpoint_t user_e, vir_bytes user_addr,
 	unsigned int num_of_bytes, off_t *new_posp, size_t *cum_iop,
-	int cpflag)
+	int cpflag, uid_t uid)
 {
   struct vmnt *vmp;
   int r;
@@ -853,6 +853,7 @@ static int req_readwrite_actual(endpoint_t fs_e, ino_t inode_nr, off_t pos,
   m.m_vfs_fs_readwrite.inode = inode_nr;
   m.m_vfs_fs_readwrite.grant = grant_id;
   m.m_vfs_fs_readwrite.seek_pos = pos;
+  m.m_vfs_fs_readwrite.uid = uid;
   if ((!(vmp->m_fs_flags & RES_64BIT)) && (pos > INT_MAX)) {
 	return EINVAL;
   }
@@ -877,12 +878,13 @@ static int req_readwrite_actual(endpoint_t fs_e, ino_t inode_nr, off_t pos,
  *===========================================================================*/
 int req_readwrite(endpoint_t fs_e, ino_t inode_nr, off_t pos,
 	int rw_flag, endpoint_t user_e, vir_bytes user_addr,
-	unsigned int num_of_bytes, off_t *new_posp, size_t *cum_iop)
+	unsigned int num_of_bytes, off_t *new_posp, size_t *cum_iop,
+  uid_t input_uid)
 {
 	int r;
 
 	r = req_readwrite_actual(fs_e, inode_nr, pos, rw_flag, user_e,
-		user_addr, num_of_bytes, new_posp, cum_iop, CPF_TRY);
+		user_addr, num_of_bytes, new_posp, cum_iop, CPF_TRY, input_uid);
 
 	if (r == ERESTART) {
 		if ((r=vm_vfs_procctl_handlemem(user_e, (vir_bytes) user_addr,
@@ -891,7 +893,7 @@ int req_readwrite(endpoint_t fs_e, ino_t inode_nr, off_t pos,
 		}
 
 		r = req_readwrite_actual(fs_e, inode_nr, pos, rw_flag, user_e,
-			user_addr, num_of_bytes, new_posp, cum_iop, 0);
+			user_addr, num_of_bytes, new_posp, cum_iop, 0, input_uid);
 	}
 
 	return r;
