@@ -2,20 +2,24 @@ Build the project using realesetools
 Boot Minix
 Login as root
 Create a user(user add -m XXXX)
-Give him a password(passwd XXXX)
+Set password(passwd XXXX)
+Create another user(user add -m XXXX2)
+Set password(passwd XXXX2)
 Logout(exit)
 Login as the new user
 
-/* Sometimes safecopy fails and spills the message on the screen.
-    It does not affect anything
-*/
+Create a text file(echo plaintext > file)
+Dump the content(cat file)
+Logout(exit)
+Login as the second user
+Go to the home directory of the other user(cd ../XXXX)
+Dump the content(cat file)
 
-Create a text file(vi XXXX)
-Right something in the file and save
-Copy the file
-Dump the content of the file(cat XXXX) -- The outpout should 
-    have the first letter different, letter h(demonstrates a different
-    read/decryption)
-Open the other file -- The content should be different in the first 
-    letter, letter c (demonstrates a different write/encryption)
+At this point two things must have happened. During the first
+file dump the original content is shown but after the second,
+a slight difference must be present.
+The difference is generally small because the the uids are
+generated in an incremental fashion(e.g. 1000 vs 1001).
 
+example1: user1: aaaa, user2: aaa`
+example2: user1: 123456789, user2: 123556799

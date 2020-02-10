@@ -71,9 +71,6 @@ int32_t do_sys2(message *m_ptr){
 }
 
 int do_sys3(message *m_ptr){
-
     return getProcess();
-
-  }
 }
 

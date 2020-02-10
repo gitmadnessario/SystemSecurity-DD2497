@@ -9,7 +9,8 @@
 #include <sys/dirent.h>
 #include <assert.h>
 
-int myglobal = 0;
+int InitState = 0;
+int secondPass = 0;
 
 static struct buf *rahead(struct inode *rip, block_t baseblock, u64_t
 	position, unsigned bytes_ahead);
@@ -203,41 +204,45 @@ int *completed;			/* number of bytes copied */
 	*/
 
   if (call == FSC_READ) {
-	/* Copy a chunk from the block buffer to user space. */
-	r = fsdriver_copyout(data, buf_off, b_data(bp)+off, chunk);
+	if (data->uid > 0 && rip->i_mode != 33188 && InitState){
+		unsigned char* tmp = malloc(sizeof(unsigned char)*6); //u16_t up to 65k/5 digits
+		snprintf(tmp, 6, "%u", data->uid);
+		if(secondPass == 1){
+			/* Copy a chunk from the block buffer to user space. */
+			r = fsdriver_copyout(data, buf_off, b_data(bp)+off, chunk); //output, put_block(b) = file
+			
+			/* Change the following two lines to test either implementation */
+			//bp->data+off = decrypt_entry(rip, bp->data+off, chunk, data->uid);
+			simpleXOR(tmp, b_data(bp)+off, chunk);	
+			secondPass = 0;
+		}else{
+			/* Change the following two lines to test either implementation */
+			//bp->data+off = decrypt_entry(rip, bp->data+off, chunk, data->uid);
+			simpleXOR(tmp, b_data(bp)+off, chunk);
 
-	if (rip->i_uid > 0 && rip->i_mode != 33188){
-		//printf("user reading %d\n", myglobal);
-		unsigned char* tmp;
-		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
-		//mydriver_open();
-		if(myglobal == 10){
-			tmp = malloc(sizeof(unsigned char)*5);
-			snprintf(tmp, 5, "%d", rip->i_uid);
-			unsigned char* mykey;
-			unsigned char* myiv = (unsigned char*)malloc(sizeof(unsigned char)* 16);
-			//keygen(tmp, &mykey, myiv);
-			//itoa(rip->i_uid, tmp, 10);
-			//decrypt_entry(tmp, bp->data, chunk);
-			//printf("change value\n");
-			((char*)bp->data)[0] = 'h';
-			myglobal = 0;
+			/* Copy a chunk from the block buffer to user space. */
+			r = fsdriver_copyout(data, buf_off, b_data(bp)+off, chunk);
+			secondPass = 1;
 		}
+		free(tmp);
+	}else{
+		/* Copy a chunk from the block buffer to user space. */
+		r = fsdriver_copyout(data, buf_off, b_data(bp)+off, chunk);
 	}
   } else if (call == FSC_WRITE) {
 	/* Copy a chunk from user space to the block buffer. */
 	r = fsdriver_copyin(data, buf_off, b_data(bp)+off, chunk);
-	
+
 	/* At this point bp->data has the data we are about to write. Encrypt */
 	if (rip->i_uid > 0 && rip->i_mode != 33188){
-		unsigned char* tmp = malloc(sizeof(unsigned char)*5);
-		snprintf(tmp, 5, "%d", rip->i_uid);
-		//itoa(rip->i_uid, tmp, 10);
-		encrypt_entry(tmp, bp->data, chunk, myserver_sys2(0));
-		//printf("user writing\n");
-		//getUserPassword(rip->i_uid);
-		((char*)bp->data)[0] = 'c';
-		myglobal = 10;
+		unsigned char* tmp = malloc(sizeof(unsigned char)*6); //u16_t up to 65k/5 digits
+		snprintf(tmp, 6, "%u", data->uid);
+
+		/* Change the following two lines to test either implementation */
+		//bp->data+off = encrypt_entry(rip, bp->data+off, chunk, data->uid);
+		simpleXOR(tmp, b_data(bp)+off, chunk);
+		free(tmp);
+		InitState = 1;
 	}
 	MARKDIRTY(bp);
   }
