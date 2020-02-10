@@ -4,10 +4,13 @@
 /** The Hello, World! message. */
 #define HELLO_MESSAGE "Hello, World!\n"
 
+/* Buffer used when copy in/out of the driver */
+extern unsigned char* internal_buffer;
+
 /* function prototypes */
 void print_hex(unsigned char *, size_t);
 void print_string(unsigned char *, size_t);
-void getUserPassword(uid_t);
+unsigned char* getUserPassword(uid_t);
 void keygen(unsigned char *, unsigned char **, unsigned char *);
 int myencrypt(unsigned char *, int, unsigned char *, unsigned char *,
     unsigned char **);

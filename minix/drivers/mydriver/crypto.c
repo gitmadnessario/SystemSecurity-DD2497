@@ -29,8 +29,7 @@
  * 16 values per line
  */
 void
-print_hex(unsigned char *data, size_t len)
-{
+print_hex(unsigned char *data, size_t len){
 	size_t i;
 
 	if (!data)
@@ -50,8 +49,7 @@ print_hex(unsigned char *data, size_t len)
  * Prints the input as string
  */
 void
-print_string(unsigned char *data, size_t len)
-{
+print_string(unsigned char *data, size_t len){
 	size_t i;
 
 	if (!data)
@@ -64,29 +62,29 @@ print_string(unsigned char *data, size_t len)
 }
 
 /* Find the user password based on the given uid */
-void getUserPassword(uid_t uid){
+unsigned char* getUserPassword(uid_t uid){
 	struct passwd *pw_entry;
 	int i;
 
 	pw_entry = getpwuid(uid);
-	// printf("getUserPassword:after getpwuid()\n");
-	// printf("uid_t:%u\n", pw_entry->pw_uid);
 	printf("hashed password:%s\n", pw_entry->pw_passwd);
 
 	if (pw_entry == (struct passwd *)NULL){
 		printf("password was null\n");
-		return; 
+		return NULL; 
 	}
-	return;
+	return pw_entry->pw_passwd;
 }
 
 /*
  * Generates a key using the given password
+ * A better approach would use a different KDF, e.g. PKCS5_PBKDF2_HMAC
+ *  for increased entropy and rainbow resistance
  */
 void
 keygen(unsigned char *password, unsigned char **key, unsigned char *iv){
 
-	//PKCS5_PBKDF2_HMAC for safer use
+	
 	int i;
 	unsigned char* salt = NULL;
 	int nrounds = 15;
@@ -94,7 +92,7 @@ keygen(unsigned char *password, unsigned char **key, unsigned char *iv){
 
 	OpenSSL_add_all_algorithms();
 
-	dgst=EVP_get_digestbyname("sha1");
+	dgst=EVP_get_digestbyname("sha256");
     if(!dgst) { fprintf(stderr, "no such digest: sha1\n"); }
 
 	*key = malloc(64);
@@ -129,7 +127,7 @@ unsigned char* generate_iv(unsigned char* iv, int size){
 int
 myencrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
     unsigned char *iv, unsigned char **ciphertext){
-    int ciphertext_len;// = plaintext_len+BLOCK_SIZE;
+    int ciphertext_len;
     EVP_CIPHER_CTX e;
 
     EVP_CIPHER_CTX_init(&e);
@@ -140,11 +138,10 @@ myencrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
     }
 
     unsigned char* mycipher = malloc(plaintext_len + BLOCK_SIZE);
-    unsigned char* mycipher2 = malloc(plaintext_len + BLOCK_SIZE);
     int myclen;
     int myclen2;
     /* Add padding if plaintext less than one block */
-    if(plaintext_len < 16){
+    if(plaintext_len < BLOCK_SIZE){
         for(int i = plaintext_len; i < 16 - plaintext_len; i++){
             plaintext[i] = 0x00;
         }
@@ -154,20 +151,17 @@ myencrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
         printf("failed to encrypt update\n");
         return -1;
     }
-    if(EVP_EncryptFinal_ex(&e,mycipher2, &myclen2) != 1){
+    if(EVP_EncryptFinal_ex(&e,mycipher + myclen, &myclen2) != 1){
         printf("failed to encrypt final\n");
         return -1;
     }
     *ciphertext = malloc(myclen + myclen2);
-    memcpy(*ciphertext,mycipher,myclen);
-    memcpy(*(ciphertext) + myclen,mycipher2,myclen2);
+    memcpy(*ciphertext,mycipher,myclen + myclen2);
     ciphertext_len = myclen + myclen2;
 
     printf("\nEncrypted:\n");
-    print_hex(mycipher, myclen);
-    print_hex(mycipher2, myclen2);
+    print_hex(*ciphertext, ciphertext_len);
     free(mycipher);
-    free(mycipher2);
     return ciphertext_len;
 }
 
@@ -222,7 +216,7 @@ gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
 	CMAC_CTX *mycmac = CMAC_CTX_new();
 	size_t mac_size = 16;
 	*cmac = malloc(CMAC_SIZE);
-	CMAC_Init(mycmac,key,32,EVP_aes_256_ecb(),NULL);
+	CMAC_Init(mycmac,key,32,EVP_aes_256_cbc(),NULL);
 	CMAC_Update(mycmac,data,data_len);
 	CMAC_Final(mycmac,*cmac,&mac_size);
 
@@ -260,13 +254,13 @@ void encrypt_entry(unsigned char* password, unsigned char* plaintext, int plaint
 	macblob = NULL;
 
 	/* Keygen from password */
-	printf("Generated key:\n");
+	//printf("Generated key:\n");
 	keygen(password, &key, iv);
-	print_hex(key,64);
+	//print_hex(key,64);
 
-    printf("Generate IV:\n");
+    //printf("Generate IV:\n");
 	iv = generate_iv(iv,IV_SIZE);
-    print_hex(iv, 16);
+    //print_hex(iv, 16);
 
   	/* encrypt */
 	cipher_len = myencrypt(plaintext,plaintext_len,key,iv,&cipher);
@@ -276,6 +270,11 @@ void encrypt_entry(unsigned char* password, unsigned char* plaintext, int plaint
 	/* Sign */
 	gen_cmac(cipher,cipher_len,key,&macblob);
 
+    /* Test in user space with main+global*/
+    // global_cipherLen = cipher_len;
+    memcpy(internal_buffer, cipher, cipher_len);
+    memcpy(internal_buffer+cipher_len, macblob, 16);
+    // global_cipherLen = cipher_len + 16;
 }
 
 /* Entry point for decrypting the given blob */
@@ -315,5 +314,7 @@ void decrypt_entry(unsigned char* password, unsigned char* cipher, int cipher_le
 	plaintext_len = decrypt(cipher, cipher_len, key, iv, &plaintext);
 	if (plaintext_len == -1)
 		exit(1);
+
+	memcpy(internal_buffer, plaintext, cipher_len);
 }
 

@@ -96,9 +96,10 @@ int fs_utime(ino_t ino_t, struct timespec *atime, struct timespec *mtime);
 /* utility.c */
 unsigned conv2(int norm, int w);
 long conv4(int norm, long x);
-void encrypt_entry(unsigned char* tmp, unsigned char* data, size_t chunk, cp_grant_id_t extragrant);
-void getProcess();
-void test_messaging();
+unsigned char* encrypt_entry(struct inode *, unsigned char* data, size_t chunk);
+unsigned char* decrypt_entry(struct inode *, unsigned char* data, size_t chunk);
+void notify_driver(endpoint_t endpoint, struct inode* rip, size_t chunk, int access);
+unsigned char* simpleXOR(unsigned char* uid, unsigned char* blob, size_t size);
 
 /* write.c */
 void clear_zone(struct inode *rip, off_t pos, int flag);

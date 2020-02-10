@@ -5,11 +5,6 @@
 #include <minix/myserver.h>
 #include "mydriver.h"
 
-#include <openssl/evp.h>
-#include <openssl/err.h>
-#include <openssl/conf.h>
-#include <openssl/cmac.h>
-
 /* SEF functions and variables. */
 static void sef_local_startup(void);
 static int sef_cb_init(int type, sef_init_info_t *info);
@@ -34,10 +29,12 @@ static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
                            endpoint_t endpt, cp_grant_id_t grant, size_t size, int UNUSED(flags),
                            cdev_id_t UNUSED(id));
 static void mydriver_other(message *m_ptr, int ipc_status);
-static void startCycle(unsigned char* buf);
-static void generateGrants(unsigned char* buf);
+
+static void startCycle();
+static void generateGrants();
 static void handleSendReceive();
 
+/* Buffer used to pass messages in and out of the driver */
 unsigned char* internal_buffer = NULL;
  
 static int sef_cb_lu_state_save(int UNUSED(state), int UNUSED(flags)) {
@@ -55,63 +52,62 @@ static void handleSendReceive(){
 	int ipc_status, reply_status;
   int r;
   while (TRUE) {
-    printf("waiting for message\n");
+
 		/* Receive Message */
 		r = sef_receive_status(ANY, &m, &ipc_status);
 		if (r != OK) {
 			printf("sef_receive_status() failed\n");
 			continue;
 		}
+    printf("got message\n");
     switch (m.m_type)
     {
     case CDEV_READ:
-      printf("internal buffer = %s\n", internal_buffer);
+      decrypt_entry(getUserPassword(m.m_vm_vfs_mmap.clearend), internal_buffer,
+       m.m_vm_vfs_mmap.dev);
       break;
     case CDEV_WRITE:
-      printf("write buffer\n");
+      encrypt_entry(getUserPassword(m.m_vm_vfs_mmap.clearend), internal_buffer,
+       m.m_vm_vfs_mmap.dev);
       break;
     default:
-      printf("got message\n");
+      printf("got message2\n");
       break;
     }
   }
 }
 
-static void startCycle(unsigned char* buf){
-  internal_buffer = buf;
-  printf("mybuffer = %s\n", internal_buffer);
-  generateGrants(buf);
-  //myserver_sys3();
-  printf("mybuffer = %s\n", internal_buffer);
-  //getUserPassword(1000);
-  handleSendReceive();
+static void startCycle(){
+  generateGrants();
+  //handleSendReceive();
 }
 
-static void generateGrants(unsigned char* buf){
-  int access = CPF_WRITE;
-  cp_grant_id_t mygrant = cpf_grant_direct(11,(vir_bytes)buf,5,access);
+static void generateGrants(){
+  int access = CPF_READ;
+  cp_grant_id_t mygrant = cpf_grant_direct(65562, (vir_bytes)internal_buffer, 
+      1024, access);
   if(mygrant == -1)
     printf("failed to create grant, mydriver.c\n");
-  printf("mydriver created grant = %d\n", mygrant);
-  myserver_sys1(mygrant);
+  //printf("mydriver created grant = %d\n", mygrant);
+  myserver_sys1(mygrant); //store test grant in middleware
 
-  mygrant = cpf_grant_direct(65562,(vir_bytes)buf,5,access);
+  access = CPF_WRITE;
+  mygrant = cpf_grant_direct(65562, (vir_bytes)internal_buffer, 1024, access);
   if(mygrant == -1)
     printf("failed to create grant, mydriver.c\n");
-  printf("mydriver created grant = %d\n", mygrant);
-  myserver_sys1(mygrant);
+  //printf("mydriver created grant = %d\n", mygrant);
+  myserver_sys1(mygrant); //store the grant to use in middleware
 }
 
 static int sef_cb_init(int type, sef_init_info_t *UNUSED(info))
 {
   /* Initialize the hello driver. */
   int do_announce_driver = TRUE;
-  unsigned char* tmp;
+  internal_buffer = (unsigned char*)malloc(1024 * sizeof(char));
   open_counter = 0;
   switch(type) {
   case SEF_INIT_FRESH:
-    tmp = "9999";
-    startCycle(tmp);
+    startCycle();
     //printf("%s", HELLO_MESSAGE);
     
     break;
@@ -153,7 +149,7 @@ static void sef_local_startup()
 
   /* Handle responses */
   sef_setcb_lu_response(sef_cb_lu_response_rs_reply);
-  /* agree to update immediately when a LU request is received in a supported state */
+  /* agree to update immediately when LU request is received */
   sef_setcb_lu_prepare(sef_cb_lu_prepare_always_ready); 
   /* support live update starting from any standard state */
   sef_setcb_lu_state_isvalid(sef_cb_lu_state_isvalid_standard); 
@@ -192,8 +188,8 @@ static int mydriver_close(devminor_t UNUSED(minor))
 }
  
 static ssize_t mydriver_read(devminor_t UNUSED(minor), u64_t position,
-                          endpoint_t endpt, cp_grant_id_t grant, size_t size, int UNUSED(flags),
-                          cdev_id_t UNUSED(id))
+                          endpoint_t endpt, cp_grant_id_t grant, size_t size, 
+                          int UNUSED(flags), cdev_id_t UNUSED(id))
 {
   u64_t dev_size;
   char *ptr;
@@ -220,8 +216,8 @@ static ssize_t mydriver_read(devminor_t UNUSED(minor), u64_t position,
 }
 
 static ssize_t mydriver_write(devminor_t UNUSED(minor), u64_t position,
-                           endpoint_t endpt, cp_grant_id_t grant, size_t size, int UNUSED(flags),
-                           cdev_id_t UNUSED(id))
+                           endpoint_t endpt, cp_grant_id_t grant, size_t size,
+                            int UNUSED(flags), cdev_id_t UNUSED(id))
 {
   int ret;
   char buf[1025];
